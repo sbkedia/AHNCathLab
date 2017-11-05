@@ -3,6 +3,8 @@ package edu.cmu.ahncathlab;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -186,6 +188,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
+
+            final Context context = this;
+            Intent intent = new Intent(context, MenuActivity.class);
+            startActivity(intent);
+
             mAuthTask.execute((Void) null);
         }
     }
@@ -263,6 +270,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         addEmailsToAutoComplete(emails);
+
+
     }
 
     @Override
