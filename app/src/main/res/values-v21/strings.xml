@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">AHNCathLab</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="action_new_user">Create account</string>
+    <string name="action_register">Register</string>
+    <string name="action_start_time">Start</string>
+    <string name="action_stop_time">Stop</string>
+    <string name="action_restart_time">Restart</string>
+    <string name="menu_cost">Cost</string>
+    <string name="menu_time">Time</string>
+    <string name="new_password">New Password</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="title_activity_menu">MenuActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
