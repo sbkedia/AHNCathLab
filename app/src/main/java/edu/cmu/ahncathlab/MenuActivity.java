@@ -31,14 +31,14 @@ public class MenuActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+//            }
+//        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -51,26 +51,50 @@ public class MenuActivity extends AppCompatActivity
 
         mChronometer = (Chronometer) findViewById(R.id.timerCh);
         start = (Button) findViewById(R.id.start_button);
-        stop = (Button) findViewById(R.id.stop_button);
         restart = (Button) findViewById(R.id.restart_button);
 
+        restart.setEnabled(false);
+
         start.setOnClickListener(new View.OnClickListener() {
+            long timeStopped;
+//            boolean isStarted = false;
             @Override
             public void onClick(View view) {
-                mChronometer.start();
+                if(!restart.isEnabled()){
+                    timeStopped = 0;
+                    mChronometer.setBase(SystemClock.elapsedRealtime());
+                    mChronometer.start();
+                    start.setText("Pause");
+                    restart.setEnabled(true);
+                }
+                else{
+                   if(start.getText().equals("Pause")){
+                      timeStopped = mChronometer.getBase() - SystemClock.elapsedRealtime();
+                      mChronometer.stop();
+                      start.setText("Start");
+                   }
+                   else{
+                       mChronometer.setBase(SystemClock.elapsedRealtime() + timeStopped);
+                       mChronometer.start();
+                       start.setText("Pause");
+
+                   }
+                }
+//                if(!isStarted) {
+//                    mChronometer.setBase(SystemClock.elapsedRealtime());
+//                    mChronometer.start();
+//                }
+//                else{
+//                    mChronometer.start();
+//                }
             }
         });
 
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mChronometer.stop();
-            }
-        });
 
         restart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                restart.setEnabled(false);
                 mChronometer.setBase(SystemClock.elapsedRealtime());
             }
         });
