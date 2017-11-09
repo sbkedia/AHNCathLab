@@ -53,12 +53,7 @@ dependencies {
     //    compile 'com.google.apis:google-api-services-drive:v2-rev284-1.23.0'
     //    compile 'com.google.android.gms:play-services-drive:11.6.0'
     implementation files('lib/apache-commons-httpclient.jar')
-    implementation files('lib/gson-2.6.2.jar')
     implementation files('lib/httpcore-4.2.3.jar')
-    implementation files('lib/json-simple-1.1.1.jar')
-    implementation files('lib/mongo-java-driver-3.5.0.jar')
-    implementation files('lib/mongo-java-driver-3.5.0-javadoc.jar')
-    implementation files('lib/mongodb-driver-3.5.0.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -42,8 +42,7 @@ public class NewUserActivity extends Activity {
         Email = ((TextView) findViewById(R.id.emailID)).getText().toString();
         password = ((TextView) findViewById(R.id.password)).getText().toString();
         RadioGroup rg = (RadioGroup) findViewById(R.id.RadioGroup1);
-        role =
-                ((RadioButton)findViewById(rg.getCheckedRadioButtonId()))
+        role = ((RadioButton)findViewById(rg.getCheckedRadioButtonId()))
                         .getText().toString();
         mlogin = (Button) findViewById(R.id.btnLinkToLoginScreen);
         mRegisterButton = (Button) findViewById(R.id.register_button);
