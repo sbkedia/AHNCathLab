@@ -3,9 +3,9 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'android'
+            keyAlias 'androiddebugkey'
             keyPassword 'android'
-            storeFile file('/Users/MONICA/Documents/Capstone Android Project/AHNCathLab/.android/debug.keystore')
+            storeFile file('C:/Users/sbked/.android/debug.keystore')
             storePassword 'android'
         }
     }
@@ -27,6 +27,9 @@ android {
             signingConfig signingConfigs.config
         }
     }
+    configurations.all {
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+    }
 }
 
 dependencies {
@@ -37,7 +40,18 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    compile 'com.google.android.gms:play-services-auth:11.6.0'
+    compile 'com.android.support:appcompat-v7:26.1.0'
+    compile 'com.google.android.gms:play-services-auth:11.4.2'
+    compile 'pub.devrel:easypermissions:0.3.0'
+    compile('com.google.api-client:google-api-client-android:1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    compile('com.google.apis:google-api-services-drive:v3-rev89-1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
+    //    compile 'com.google.android.gms:play-services-auth:11.6.0'
+    //    compile 'com.google.apis:google-api-services-drive:v2-rev284-1.23.0'
+    //    compile 'com.google.android.gms:play-services-drive:11.6.0'
 }
 
 apply plugin: 'com.google.gms.google-services'
