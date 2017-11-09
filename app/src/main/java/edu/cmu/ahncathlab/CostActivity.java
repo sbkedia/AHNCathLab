@@ -7,6 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
+
 public class CostActivity extends AppCompatActivity {
 
     @Override
@@ -29,6 +34,12 @@ public class CostActivity extends AppCompatActivity {
                 goToTimeScreen();
             }
         });
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+//        GoogleSignInClient mGoogleSignInClient = buildGoogleSignInClient();
     }
 
     private void goToDashboard() {
@@ -42,4 +53,12 @@ public class CostActivity extends AppCompatActivity {
         Intent intent = new Intent(context, TimeActivity.class);
         startActivity(intent);
     }
+
+//    private GoogleSignInClient buildGoogleSignInClient() {
+//        GoogleSignInOptions signInOptions =
+//                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+//                        .requestScopes(Drive.SCOPE_FILE)
+//                        .build();
+//        return GoogleSignIn.getClient(this, signInOptions);
+//    }
 }

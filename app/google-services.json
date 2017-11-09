@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "883125912287",
+    "project_id": "ahn-cath-lab"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883125912287:android:c05c29aefd69b846",
+        "android_client_info": {
+          "package_name": "edu.cmu.ahncathlab"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883125912287-2d2gbnj1gd5go6ob9d3dhgj215qcjfpn.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "883125912287-k0qum5vj2rkvudv4jjgv30p64g73vuc7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.cmu.ahncathlab",
+            "certificate_hash": "f3f1eea1b5e357c334b384502361322b2693fe0e"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWqOzbLdznGEH3-UpIpAJXHZC1lounqqc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
