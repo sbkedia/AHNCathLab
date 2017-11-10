@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 
+
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -80,13 +81,6 @@ public class MenuActivity extends AppCompatActivity
 
                    }
                 }
-//                if(!isStarted) {
-//                    mChronometer.setBase(SystemClock.elapsedRealtime());
-//                    mChronometer.start();
-//                }
-//                else{
-//                    mChronometer.start();
-//                }
             }
         });
 
