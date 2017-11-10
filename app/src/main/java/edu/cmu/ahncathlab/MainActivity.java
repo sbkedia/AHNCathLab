@@ -10,11 +10,14 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 
 import com.google.api.services.drive.model.*;
@@ -40,7 +43,10 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -62,7 +68,7 @@ public class MainActivity extends Activity
 
     private static final String BUTTON_TEXT = "Call Drive API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { DriveScopes.DRIVE_METADATA_READONLY };
+    private static final String[] SCOPES = { DriveScopes.DRIVE };
 
     /**
      * Create the main activity.
@@ -356,6 +362,7 @@ public class MainActivity extends Activity
          */
         private List<String> getDataFromApi() throws IOException {
             // Get a list of up to 10 files.
+            String AHNFileID = "";
             List<String> fileInfo = new ArrayList<String>();
             FileList result = mService.files().list()
                     .setPageSize(10)
@@ -364,10 +371,20 @@ public class MainActivity extends Activity
             List<File> files = result.getFiles();
             if (files != null) {
                 for (File file : files) {
-                    fileInfo.add(String.format("%s (%s)\n",
-                            file.getName(), file.getId()));
+                    if (file.getName().equals("AHN_Google_Drive_Test.xlsx")) {
+                        AHNFileID = file.getId();
+                        fileInfo.add(String.format("%s (%s)\n",
+                                file.getName(), file.getId()));
+                    }
                 }
             }
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            System.out.println("File ID: " + AHNFileID);
+            mService.files().get(AHNFileID)
+                    .executeMediaAndDownloadTo(outputStream);
+            String contents = new String(outputStream.toByteArray());
+            System.out.println(contents);
             return fileInfo;
         }
 
@@ -404,6 +421,7 @@ public class MainActivity extends Activity
                 } else {
                     mOutputText.setText("The following error occurred:\n"
                             + mLastError.getMessage());
+
                 }
             } else {
                 mOutputText.setText("Request cancelled.");
