@@ -7,10 +7,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+//import com.google.android.gms.auth.api.signin.GoogleSignIn;
+//import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-
+import com.google.api.services.drive.Drive.Files;
+import com.google.api.services.drive.model.File;
+//import com.google.android.gms.drive.*;
+import com.google.android.gms.tasks.Task;
 
 public class CostActivity extends AppCompatActivity {
 
@@ -38,6 +41,7 @@ public class CostActivity extends AppCompatActivity {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
+//        Task<DriveContents> openFileTask = Drive.getDriveResourceClient().openFile(file, DriveFile.MODE_READ_ONLY);
 
 //        GoogleSignInClient mGoogleSignInClient = buildGoogleSignInClient();
     }
