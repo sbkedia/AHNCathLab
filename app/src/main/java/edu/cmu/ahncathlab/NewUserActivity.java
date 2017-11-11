@@ -1,84 +1,98 @@
 package edu.cmu.ahncathlab;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
+import android.view.View.OnClickListener;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.HttpURLConnection;
 
 
-public class NewUserActivity extends Activity {
-    String user_ID, fName, Lname, Email, password, role;
-    Button mlogin,mRegisterButton;
-    ProgressBar progressBar;
-
+public class NewUserActivity extends AppCompatActivity {
+    TextView mFName, mLName, mEmail, mPassword;
+    RadioButton mRole;
+    Button mRegisterButton1, mBackToLoginButton;
+    RadioGroup rg;
+//    ProgressBar mProgressBar1;
+    HttpURLConnection conn;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
-        user_ID = ((TextView) findViewById(R.id.userid)).getText().toString();
-        fName = ((TextView) findViewById(R.id.FName)).getText().toString();
-        Lname = ((TextView) findViewById(R.id.LName)).getText().toString();
-        Email = ((TextView) findViewById(R.id.emailID)).getText().toString();
-        password = ((TextView) findViewById(R.id.password)).getText().toString();
-        RadioGroup rg = (RadioGroup) findViewById(R.id.RadioGroup1);
-        role = ((RadioButton)findViewById(rg.getCheckedRadioButtonId()))
-                        .getText().toString();
-        mlogin = (Button) findViewById(R.id.btnLinkToLoginScreen);
-        mRegisterButton = (Button) findViewById(R.id.register_button);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+
+        //Get view variables to be worked on ahead
+        mFName = findViewById(R.id.rFName);
+        mLName = findViewById(R.id.rLName);
+        mEmail = findViewById(R.id.rEmailID);
+        mPassword = findViewById(R.id.rPassword);
+        rg = findViewById(R.id.rRadioGroup1);
+        mRole = findViewById(rg.getCheckedRadioButtonId());
+        mRegisterButton1 = findViewById(R.id.rRegister_button);
+        mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
+//        mProgressBar1 = findViewById(R.id.progressBar1);
+
+        //Get MongoDb connection
+        ServerComm mDB = new ServerComm();
+        conn = mDB.getConnection();
 
 
-        mRegisterButton.setOnClickListener(new View.OnClickListener() {
+        mRegisterButton1.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
-                new ExecuteTask().execute(user_ID, fName, Lname, Email, password, role);
+                System.out.println("In New User activity");
+                attemptRegister();
+            }
+        });
+
+        mBackToLoginButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 attemptLogin();
             }
         });
 
-        Button mbacktologinscreenButton = (Button) findViewById(R.id.btnLinkToLoginScreen);
-        mbacktologinscreenButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navigatetoLoginActivity(view);
-            }
+    }
+
+    private void attemptRegister(){
+//        mprogressBar1.setVisibility(View.VISIBLE);
+
+        //Get information from register form
+        String fName, Lname, Email, password, role;
+        fName = mFName.getText().toString();
+        Lname = mLName.getText().toString();
+        Email = mEmail.getText().toString();
+        password = mPassword.getText().toString();
+        role = mRole.getText().toString();
 
 
-        });
+        System.out.println(fName);
+        System.out.println(Lname);
+        System.out.println(Email);
+        System.out.println(password);
+        System.out.println(role);
+
+        //Register user by adding user info in the db
+
+
+//        new ExecuteTask().execute("agt", "Aritra", "Guha", "a@gmail", "dsgvds", role);
+        attemptLogin();
     }
 
     private void attemptLogin() {
         final Context context = this;
         Intent intent = new Intent(context, LoginActivity.class);
         startActivity(intent);
-    }
-
-    public void navigatetoLoginActivity(View view){
-        Intent homeIntent = new Intent(getApplicationContext(),LoginActivity.class);
-        homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(homeIntent);
     }
 
 
@@ -103,6 +117,7 @@ public class NewUserActivity extends Activity {
 
         @Override
         protected String doInBackground(String... params) {
+            System.out.println("In doInBackground");
             try {
                 PostData(params);
             } catch (UnsupportedEncodingException e) {
@@ -115,24 +130,29 @@ public class NewUserActivity extends Activity {
 
         @Override
         protected void onPostExecute(String s) {
-            progressBar.setVisibility(View.GONE);
+//            mprogressBar1.setVisibility(View.GONE);
         }
 
     }
 
     public void PostData(String[] values) throws IOException {
-        HttpClient hc = new DefaultHttpClient();
-        HttpPost hp = new HttpPost("http://localhost:8080/MongoDBFetchandAdd/MongoDBAdd/");
-        List<NameValuePair> user = new ArrayList<NameValuePair>();
-        user.add(new BasicNameValuePair("user_ID", values[0]));
-        user.add(new BasicNameValuePair("FName", values[1]));
-        user.add(new BasicNameValuePair("LName", values[2]));
-        user.add(new BasicNameValuePair("Email", values[3]));
-        user.add(new BasicNameValuePair("password", values[4]));
-        user.add(new BasicNameValuePair("role", values[5]));
-        hp.setEntity(new UrlEncodedFormEntity(user));
-        hc.execute(hp);
+//        HttpClient hc = new DefaultHttpClient();
+//        HttpPost hp = new HttpPost("http://128.237.130.121:8080/MongoDBFetchandAdd");
+//        List<NameValuePair> user = new ArrayList<NameValuePair>();
+//        user.add(new BasicNameValuePair("user_ID", values[0]));
+//        user.add(new BasicNameValuePair("FName", values[1]));
+//        user.add(new BasicNameValuePair("LName", values[2]));
+//        user.add(new BasicNameValuePair("Email", values[3]));
+//        user.add(new BasicNameValuePair("password", values[4]));
+//        user.add(new BasicNameValuePair("role", values[5]));
+//        System.out.println(1);
+//        hp.setEntity(new UrlEncodedFormEntity(user));
+//        hc.execute(hp);
+
+
     }
+
+
 
 
 }
