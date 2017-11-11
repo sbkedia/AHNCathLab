@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
-            storeFile file('C:/Users/sbked/.android/debug.keystore')
+            storeFile file('/Users/MONICA/.android/debug.keystore')
             storePassword 'android'
         }
     }
@@ -56,6 +56,9 @@ dependencies {
     compile('com.google.apis:google-api-services-drive:v3-rev89-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
+    compile('com.google.apis:google-api-services-sheets:v4-rev490-1.23.0') {
+        exclude group: 'org.apache.httpcomponents'
+    }
     //    compile 'com.google.android.gms:play-services-auth:11.6.0'
     //    compile 'com.google.apis:google-api-services-drive:v2-rev284-1.23.0'
     //    compile 'com.google.android.gms:play-services-drive:11.6.0'
@@ -64,6 +67,7 @@ dependencies {
     implementation files('lib/commons-codec-1.9.jar')
     implementation files('lib/commons-logging-1.2.jar')
     implementation files('lib/httpcore-4.4.6.jar')
+    implementation files('lib/core-1.47.1.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

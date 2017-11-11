@@ -29,17 +29,17 @@ public class NewUserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_user);
-
-        //Get view variables to be worked on ahead
-        mFName = findViewById(R.id.rFName);
-        mLName = findViewById(R.id.rLName);
-        mEmail = findViewById(R.id.rEmailID);
-        mPassword = findViewById(R.id.rPassword);
-        rg = findViewById(R.id.rRadioGroup1);
-        mRole = findViewById(rg.getCheckedRadioButtonId());
-        mRegisterButton1 = findViewById(R.id.rRegister_button);
-        mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
+//        setContentView(R.layout.activity_new_user);
+//
+//        //Get view variables to be worked on ahead
+//        mFName = findViewById(R.id.rFName);
+//        mLName = findViewById(R.id.rLName);
+//        mEmail = findViewById(R.id.rEmailID);
+//        mPassword = findViewById(R.id.rPassword);
+//        rg = findViewById(R.id.rRadioGroup1);
+//        mRole = findViewById(rg.getCheckedRadioButtonId());
+//        mRegisterButton1 = findViewById(R.id.rRegister_button);
+//        mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
 //        mProgressBar1 = findViewById(R.id.progressBar1);
 
         //Get MongoDb connection

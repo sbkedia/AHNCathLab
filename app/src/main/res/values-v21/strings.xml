@@ -10,6 +10,8 @@
     <string name="action_start_time">Start</string>
     <string name="action_stop_time">Stop</string>
     <string name="action_restart_time">Restart</string>
+    <string name="first_name">First Name</string>
+    <string name="already_account_present">Account already present</string>
     <string name="menu_cost">Cost</string>
     <string name="menu_time">Time</string>
     <string name="new_password">New Password</string>
