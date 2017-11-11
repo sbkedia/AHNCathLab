@@ -92,7 +92,7 @@ public class GoogleDriveActivity extends Activity
             public void onClick(View v) {
                 mCallApiButton.setEnabled(false);
                 mOutputText.setText("");
-                getResultsFromApi();
+//                getResultsFromApi();
                 mCallApiButton.setEnabled(true);
             }
         });
@@ -116,6 +116,7 @@ public class GoogleDriveActivity extends Activity
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+        getResultsFromApi();
     }
 
     /**
@@ -319,7 +320,6 @@ public class GoogleDriveActivity extends Activity
 
     private void getID(List<String> output) {
         AHNFileID = output.get(1);
-        System.out.println("The final ID (!): " + AHNFileID);
     }
 
     private void callSheetsAPI() {

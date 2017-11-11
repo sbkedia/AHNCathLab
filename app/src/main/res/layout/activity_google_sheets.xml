@@ -6,4 +6,37 @@
     android:layout_height="match_parent"
     tools:context="edu.cmu.ahncathlab.GoogleSheetsActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/homeButton"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Back to dashboard" />
+
+            <Button
+                android:id="@+id/timeButton"
+                android:layout_width="160dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="View Time Report" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/mOutputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="To design - Cost" />
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

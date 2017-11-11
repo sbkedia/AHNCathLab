@@ -67,7 +67,6 @@ dependencies {
     implementation files('lib/commons-codec-1.9.jar')
     implementation files('lib/commons-logging-1.2.jar')
     implementation files('lib/httpcore-4.4.6.jar')
-    implementation files('lib/core-1.47.1.jar')
 }
 
 apply plugin: 'com.google.gms.google-services'

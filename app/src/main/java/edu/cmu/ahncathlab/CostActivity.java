@@ -38,12 +38,7 @@ public class CostActivity extends AppCompatActivity {
             }
         });
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-//        Task<DriveContents> openFileTask = Drive.getDriveResourceClient().openFile(file, DriveFile.MODE_READ_ONLY);
-
-//        GoogleSignInClient mGoogleSignInClient = buildGoogleSignInClient();
+        callDriveAPI();
     }
 
     private void goToDashboard() {
@@ -58,11 +53,10 @@ public class CostActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-//    private GoogleSignInClient buildGoogleSignInClient() {
-//        GoogleSignInOptions signInOptions =
-//                new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                        .requestScopes(Drive.SCOPE_FILE)
-//                        .build();
-//        return GoogleSignIn.getClient(this, signInOptions);
-//    }
+    private void callDriveAPI() {
+        final Context context = this;
+        Intent intent = new Intent(context, GoogleDriveActivity.class);
+        startActivity(intent);
+    }
+
 }
