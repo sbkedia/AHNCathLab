@@ -10,16 +10,12 @@ import android.Manifest;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.method.ScrollingMovementMethod;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,18 +24,17 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -86,47 +81,8 @@ public class GoogleSheetsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         ID = bundle.getString("FileID");
 
-//        LinearLayout activityLayout = new LinearLayout(this);
-//        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.MATCH_PARENT);
-//        activityLayout.setLayoutParams(lp);
-//        activityLayout.setOrientation(LinearLayout.VERTICAL);
-//        activityLayout.setPadding(16, 16, 16, 16);
-//
-//        ViewGroup.LayoutParams tlp = new ViewGroup.LayoutParams(
-//                ViewGroup.LayoutParams.WRAP_CONTENT,
-//                ViewGroup.LayoutParams.WRAP_CONTENT);
-//
-//        mCallApiButton = new Button(this);
-//        mCallApiButton.setText(BUTTON_TEXT);
-//        mCallApiButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                mCallApiButton.setEnabled(false);
-//                mOutputText.setText("");
-////                getResultsFromApi();
-//                mCallApiButton.setEnabled(true);
-//            }
-//        });
-//        activityLayout.addView(mCallApiButton);
-
 
         mOutputText = findViewById(R.id.mOutputText);
-//        mOutputText.setLayoutParams(tlp);
-//        mOutputText.setPadding(16, 16, 16, 16);
-//        mOutputText.setVerticalScrollBarEnabled(true);
-//        mOutputText.setMovementMethod(new ScrollingMovementMethod());
-//        mOutputText.setText(
-//                "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
-//        activityLayout.addView(mOutputText);
-
-//        mProgress = new ProgressDialog(this);
-//        mProgress.setMessage("Calling Google Sheets API ...");
-
-//        setContentView(activityLayout);
-
-        // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
@@ -137,12 +93,72 @@ public class GoogleSheetsActivity extends AppCompatActivity {
         sheetValues = output;
     }
 
-//    private void goToCostActivity() {
-//        final Context context = this;
-//        Intent intent = new Intent(context, GoogleSheetsActivity.class);
-//        intent.putExtra("googleSheetContents", (Parcelable) sheetValues);
-//        startActivity(intent);
-//    }
+    private void computeCost() {
+        SharedPreferences sharedPref = getSharedPreferences("my_prefs", 0);
+        String emailID = sharedPref.getString("emailID", "");
+
+        HashMap<String, List<Double>> indirectCost = new HashMap<>();
+        HashMap<String, List<Double>> directCost = new HashMap<>();
+        HashMap<String, List<Double>> materialCost = new HashMap<>();
+        HashMap<String, List<Double>> patientTotals = new HashMap<>();
+
+        double totalIndirect = 0, totalDirect = 0, totalMaterial = 0;
+
+        for (String row: sheetValues) {
+            if (row.contains(emailID)) {
+                String rowData[] = row.split(",");
+                if (!indirectCost.containsKey(rowData[1])) {
+                    List<Double> listIndirect = new ArrayList<>();
+                    listIndirect.add(Double.parseDouble(rowData[4]));
+                    indirectCost.put(rowData[1], listIndirect);
+
+                    List<Double> listDirect = new ArrayList<>();
+                    listDirect.add(Double.parseDouble(rowData[6]));
+                    directCost.put(rowData[1], listDirect);
+
+                    List<Double> listMaterial = new ArrayList<>();
+                    listMaterial.add(Double.parseDouble(rowData[5]));
+                    materialCost.put(rowData[1], listMaterial);
+                }
+                else {
+                    indirectCost.get(rowData[1]).add(Double.parseDouble(rowData[4]));
+                    directCost.get(rowData[1]).add(Double.parseDouble(rowData[6]));
+                    materialCost.get(rowData[1]).add(Double.parseDouble(rowData[5]));
+                }
+            }
+        }
+
+        List<String> result = new ArrayList<>();
+        result.add("\n");
+
+        for (String key: indirectCost.keySet()) {
+            result.add("Patient: " + key);
+            for (Double cost: indirectCost.get(key))
+                totalIndirect += cost;
+            for (Double cost: directCost.get(key))
+                totalDirect += cost;
+            for (Double cost: materialCost.get(key))
+                totalMaterial += cost;
+            result.add("Indirect costs: " + totalIndirect);
+            result.add("Direct costs: " + totalDirect);
+            result.add("Material costs: " + totalMaterial+"\n");
+            patientTotals.put(key, Arrays.asList(totalIndirect, totalDirect, totalMaterial));
+        }
+
+        System.out.println("Indirect cost:");
+        System.out.println(indirectCost + "\n");
+
+        System.out.println("Direct cost:");
+        System.out.println(directCost + "\n");
+
+        System.out.println("Material cost:");
+        System.out.println(materialCost + "\n");
+
+        System.out.println("Patient totals:");
+        System.out.println(patientTotals);
+
+        mOutputText.setText(TextUtils.join("\n", result));
+    }
 
     private void goToDashboard() {
         final Context context = this;
@@ -378,7 +394,9 @@ public class GoogleSheetsActivity extends AppCompatActivity {
             List<List<Object>> values = response.getValues();
             if (values != null) {
                 for (List row : values) {
-                    results.add(row.get(0) + "," + row.get(1) + "," + row.get(2) + "," + row.get(3) + "," + row.get(4) + "," + row.get(5) + "," + row.get(6));
+                    results.add(row.get(0) + "," + row.get(1) + ","
+                            + row.get(2) + "," + row.get(3) + "," + row.get(4)
+                            + "," + row.get(5) + "," + row.get(6));
                 }
             }
             return results;
@@ -387,24 +405,20 @@ public class GoogleSheetsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             mOutputText.setText("");
-//            mProgress.show();
         }
 
         @Override
         protected void onPostExecute(List<String> output) {
-//            mProgress.hide();
             if (output == null || output.size() == 0) {
                 mOutputText.setText("No results returned.");
             } else {
-                output.add(0, "Data retrieved using the Google Sheets API:");
-                mOutputText.setText(TextUtils.join("\n", output));
                 getValues(output);
+                computeCost();
             }
         }
 
         @Override
         protected void onCancelled() {
-//            mProgress.hide();
             if (mLastError != null) {
                 if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
                     showGooglePlayServicesAvailabilityErrorDialog(

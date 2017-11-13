@@ -34,8 +34,7 @@
         <TextView
             android:id="@+id/mOutputText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="To design - Cost" />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
