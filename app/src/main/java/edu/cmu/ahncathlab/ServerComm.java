@@ -17,9 +17,17 @@ import java.net.URL;
 public class ServerComm {
     String response;
     NewUserActivity newUserActivity;
+    MenuActivity menuActivity;
+
     // Add new user info to database
     public String registerUser(String csvString, NewUserActivity nua) {
-        nua = newUserActivity;
+        newUserActivity = nua;
+        new doPost().execute(csvString);
+        return "";
+    }
+
+    public String addTimeTrack(String csvString, MenuActivity ma){
+        menuActivity=ma;
         new doPost().execute(csvString);
         return "";
     }
@@ -43,8 +51,8 @@ public class ServerComm {
             return response;
         }
 
-        protected void onPostExecute(int postResponse){ newUserActivity.setPostResponse(postResponse);
-        }
+//        protected void onPostExecute(int postResponse){ newUserActivity.setPostResponse(postResponse);
+//        }
 
         public int doGet(String variableString) {
 

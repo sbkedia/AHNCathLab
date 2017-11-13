@@ -9,12 +9,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class NewUserActivity extends AppCompatActivity {
@@ -22,9 +27,10 @@ public class NewUserActivity extends AppCompatActivity {
     RadioButton mRole;
     Button mRegisterButton1, mBackToLoginButton;
     RadioGroup rg;
-//    ProgressBar mProgressBar1;
+    ProgressBar mProgressBar1;
     ServerComm serverComm;
     NewUserActivity nua;
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +52,7 @@ public class NewUserActivity extends AppCompatActivity {
         mRole = findViewById(rg.getCheckedRadioButtonId());
         mRegisterButton1 = findViewById(R.id.rRegister_button);
         mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
-//        mProgressBar1 = findViewById(R.id.progressBar1);
+        mProgressBar1 = findViewById(R.id.login_progress);
 
 
         mRegisterButton1.setOnClickListener(new OnClickListener() {
@@ -60,14 +66,15 @@ public class NewUserActivity extends AppCompatActivity {
         mBackToLoginButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                Intent intent = new Intent(context, LoginActivity.class);
+                startActivity(intent);
             }
         });
 
     }
 
     private void attemptRegister(){
-//        mprogressBar1.setVisibility(View.VISIBLE);
+        mProgressBar1.setVisibility(View.VISIBLE);
 
         //Get information from register form
         String fName, lName, email, password, role;
@@ -86,33 +93,10 @@ public class NewUserActivity extends AppCompatActivity {
 
         //Register user by adding user info in the db
         String csvString = "AddUser" +","+ fName +","+ lName +","+ email +","+ password +","+ role;
-        String response = serverComm.registerUser(csvString, nua);
-        attemptLogin();
+        new ExecuteTask().execute(csvString);
+//        String response = serverComm.registerUser(csvString, nua);
+//        attemptLogin();
     }
-
-    private void attemptLogin() {
-        final Context context = this;
-        Intent intent = new Intent(context, LoginActivity.class);
-        startActivity(intent);
-    }
-
-
-//    public void onRadioButtonClicked(View view) {
-//     // Is the button now checked?
-//     boolean checked = ((RadioButton) view).isChecked();
-//
-//    // Check which radio button was clicked
-//     switch(view.getId()) {
-//         case R.id.Physician:
-//             if (checked)
-//
-//             break;
-//         case R.id.Manager:
-//             if (checked)
-//
-//                 break;
-//     }
-//    }
 
     class ExecuteTask extends AsyncTask<String, Integer, String> {
 
@@ -131,25 +115,42 @@ public class NewUserActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String s) {
-//            mprogressBar1.setVisibility(View.GONE);
+            mProgressBar1.setVisibility(View.GONE);
+            Intent intent = new Intent(context, LoginActivity.class);
+            startActivity(intent);
         }
 
     }
 
     public void PostData(String[] values) throws IOException {
-//        HttpClient hc = new DefaultHttpClient();
-//        HttpPost hp = new HttpPost("http://128.237.130.121:8080/MongoDBFetchandAdd");
-//        List<NameValuePair> user = new ArrayList<NameValuePair>();
-//        user.add(new BasicNameValuePair("user_ID", values[0]));
-//        user.add(new BasicNameValuePair("FName", values[1]));
-//        user.add(new BasicNameValuePair("LName", values[2]));
-//        user.add(new BasicNameValuePair("Email", values[3]));
-//        user.add(new BasicNameValuePair("password", values[4]));
-//        user.add(new BasicNameValuePair("role", values[5]));
-//        System.out.println(1);
-//        hp.setEntity(new UrlEncodedFormEntity(user));
-//        hc.execute(hp);
+        int status = 0;
+        String output;
 
+        try {
+            System.out.println("In post");
+            // Make call to a particular URL
+            URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/ ");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            // set request method to POST and send name value pair
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            // write to POST data area
+            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+            out.write(values[0]);
+            out.close();
+
+            // get HTTP response code sent by server
+            status = conn.getResponseCode();
+
+            //close the connection
+            conn.disconnect();
+        } // handle exceptions
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
