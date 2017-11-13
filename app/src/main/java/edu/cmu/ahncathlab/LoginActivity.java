@@ -105,13 +105,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void passValueToCost(String emailID) {
-        SharedPreferences prefs = getSharedPreferences("my_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor edit = prefs.edit();
-        edit.putString("emailID", emailID);
-        edit.commit();
-    }
-
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
@@ -179,8 +172,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
         logInEmail = email;
-
-        passValueToCost(email);
 
         boolean cancel = false;
         View focusView = null;
