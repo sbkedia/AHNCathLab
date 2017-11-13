@@ -2,6 +2,7 @@ package edu.cmu.ahncathlab;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
@@ -20,12 +21,24 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
 
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     Chronometer mChronometer;
     Button start, stop, restart;
+    final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +47,7 @@ public class MenuActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Floating action button may be used in further iterations
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -49,13 +63,7 @@ public class MenuActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        //Update menu bar details
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-        View header=navigationView.getHeaderView(0);
-        TextView mEmail = (TextView)header.findViewById(R.id.emailID);
-        TextView logInEmail = findViewById(R.id.email);
-        mEmail.setText(LoginActivity.logInEmail);
+
 
         mChronometer = (Chronometer) findViewById(R.id.timerCh);
         start = (Button) findViewById(R.id.start_button);
@@ -68,18 +76,34 @@ public class MenuActivity extends AppCompatActivity
 //            boolean isStarted = false;
             @Override
             public void onClick(View view) {
+                String email = LoginActivity.logInEmail;
+                DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+                Date date = new Date();
+                String todayDate = dateFormat.format(date);
+                String  todayTime = timeFormat.format(date);
+
                 if(!restart.isEnabled()){
                     timeStopped = 0;
                     mChronometer.setBase(SystemClock.elapsedRealtime());
                     mChronometer.start();
                     start.setText("Pause");
                     restart.setEnabled(true);
+
+                    //Add 'in' time in track_info table
+                    String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
+                    new ExecuteTask().execute(csvString);
+
                 }
                 else{
                    if(start.getText().equals("Pause")){
                       timeStopped = mChronometer.getBase() - SystemClock.elapsedRealtime();
                       mChronometer.stop();
                       start.setText("Start");
+
+                      //Add 'out' time in track_info table
+                       String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "Out";
+                    new ExecuteTask().execute(csvString);
                    }
                    else{
                        mChronometer.setBase(SystemClock.elapsedRealtime() + timeStopped);
@@ -115,6 +139,14 @@ public class MenuActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        //Update menu bar details
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+        TextView mEmail = (TextView)header.findViewById(R.id.emailID);
+        TextView logInEmail = findViewById(R.id.email);
+        mEmail.setText(LoginActivity.logInEmail);
         return true;
     }
 
@@ -152,5 +184,62 @@ public class MenuActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    class ExecuteTask extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            System.out.println("In doInBackground");
+            try {
+                PostData(params);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+//            mprogressBar1.setVisibility(View.GONE);
+            Intent intent = new Intent(context, LoginActivity.class);
+            startActivity(intent);
+        }
+
+    }
+
+    public void PostData(String[] values) throws IOException {
+        int status = 0;
+        String output;
+
+        try {
+            System.out.println("In post");
+            // Make call to a particular URL
+            URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/ ");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            // set request method to POST and send name value pair
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            // write to POST data area
+            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+            out.write(values[0]);
+            out.close();
+
+            // get HTTP response code sent by server
+            status = conn.getResponseCode();
+
+            //close the connection
+            conn.disconnect();
+        } // handle exceptions
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
