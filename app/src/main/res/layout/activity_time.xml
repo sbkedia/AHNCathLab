@@ -31,13 +31,24 @@
                     android:layout_height="?attr/actionBarSize"
                     android:background="?attr/colorPrimary"
                     app:popupTheme="@style/AppTheme.PopupOverlay" />
+
             </android.support.design.widget.AppBarLayout>
 
-            <TextView
-                android:id="@+id/textView"
+            <EditText
+                android:id="@+id/pickDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="To design - Time" />
+                android:hint="Select Date"
+                android:imeOptions="actionUnspecified"
+                android:inputType="date"
+                android:maxLines="1"
+                android:clickable="true"
+                android:singleLine="true" />
+
+            <TextView
+                android:id="@+id/timeView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

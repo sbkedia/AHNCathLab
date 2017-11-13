@@ -362,7 +362,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             String passHash = calculateHash();
             String response = doGet(passHash);
 
-            System.out.println("Responseeeeeeeeeeeeeeeeeeeeeeeee" + response);
             //If server error
             if(!response.equals("Authenticated") && !response.equalsIgnoreCase("Illegal User") ) {
                 return false;

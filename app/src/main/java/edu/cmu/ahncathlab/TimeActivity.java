@@ -1,7 +1,9 @@
 package edu.cmu.ahncathlab;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -10,20 +12,49 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class TimeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     final Context context = this;
+    private TextView mOutputText;
+    private EditText datePick;
+    private Calendar myCalendar;
+    private DatePickerDialog.OnDateSetListener date;
+    private DisplayTime mDisplayTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time);
+
+        myCalendar = Calendar.getInstance();
+        mOutputText = findViewById(R.id.timeView);
+        datePick= findViewById(R.id.pickDate);
 
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
@@ -35,6 +66,40 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        mDisplayTime = new DisplayTime();
+
+        date = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                // TODO Auto-generated method stub
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabel();
+                mDisplayTime.execute((Void) null);
+            }
+
+        };
+        datePick.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                new DatePickerDialog(context, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+    }
+
+    private void updateLabel() {
+        String myFormat = "MM/dd/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        datePick.setText(sdf.format(myCalendar.getTime()));
     }
 
     @Override
@@ -106,5 +171,84 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
         LoginActivity.logInEmail = "";
         startActivity(intent);
         finish();
+    }
+
+    /**
+     * Represents an asynchronous login/registration task used to authenticate
+     * the user.
+     */
+    public class DisplayTime extends AsyncTask<Void, Void, List<String>> {
+
+        @Override
+        protected List<String> doInBackground(Void... params) {
+            //Check if correct credentials
+            List<String> response = doGet();
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(List<String> output) {
+
+            if (output == null || output.size() == 0) {
+                mOutputText.setText("No results returned.");
+            } else {
+                int count = 0;
+                for(String dis : output){
+                    count++;
+                    mOutputText.append(dis +"\t");
+                    if(count%3==0){
+                        mOutputText.append("\n");
+                    }
+                }
+//                mOutputText.setText(TextUtils.join("\n", output));
+//                mOutputText.setText(TextUtils.join(" ", output));
+            }
+        }
+
+        public List<String> doGet() {
+            // Make an HTTP GET passing the name on the URL line
+            List<String> response = new ArrayList<>();
+            HttpURLConnection conn;
+            int status = 0;
+
+            try {
+                System.out.println(datePick.getText().toString());
+                // pass the userid,password
+                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "FetchUser" +"&"+ LoginActivity.logInEmail +"&"+datePick.getText().toString());
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+
+                // wait for response
+                status = conn.getResponseCode();
+
+                System.out.println(status);
+                // If things went poorly, don't try to read any response, just return.
+                if (status != 200) {
+                    // not using msg
+                    String msg = conn.getResponseMessage();
+                    response.add(msg);
+                    return response;
+                }
+                String output = "";
+                // things went well so let's read the response
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        (conn.getInputStream())));
+
+                while ((output = br.readLine()) != null) {
+                        System.out.println(output);
+                        response.addAll(Arrays.asList(output.split(",")));
+                }
+                System.out.println(response);
+                conn.disconnect();
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return response;
+        }
+
     }
 }
