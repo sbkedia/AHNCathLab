@@ -3,9 +3,11 @@ package edu.cmu.ahncathlab;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Context;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -31,8 +33,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -47,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final int REQUEST_READ_CONTACTS = 0;
 
     public static String logInEmail;
+    private String password;
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -64,11 +78,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        context = this;
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -176,11 +192,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
-        logInEmail = email;
+        logInEmail = mEmailView.getText().toString();
+        password = mPasswordView.getText().toString();
 
-        passValueToCost(email);
+        passValueToCost(logInEmail);
 
         boolean cancel = false;
         View focusView = null;
@@ -193,11 +208,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
+        if (TextUtils.isEmpty(logInEmail)) {
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!isEmailValid(logInEmail)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -211,20 +226,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
-
-//            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//            navigationView.setNavigationItemSelectedListener(this);
-//            View header=navigationView.getHeaderView(0);
-/*View view=navigationView.inflateHeaderView(R.layout.nav_header_main);*/
-//            TextView mEmail = (TextView)header.findViewById(R.id.emailID);
-//            System.out.println(mEmail.getText().toString());
-
-            final Context context = this;
-            Intent intent = new Intent(context, MenuActivity.class);
-            startActivity(intent);
-
+            mAuthTask = new UserLoginTask(logInEmail, password);
             mAuthTask.execute((Void) null);
+
         }
     }
 
@@ -347,23 +351,28 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-
             try {
                 // Simulate network access.
-                Thread.sleep(2000);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
+            //Check if correct credentials
+            String passHash = calculateHash();
+            String response = doGet(passHash);
+
+            System.out.println("Responseeeeeeeeeeeeeeeeeeeeeeeee" + response);
+            //If server error
+            if(!response.equals("Authenticated") && !response.equalsIgnoreCase("Illegal User") ) {
+                return false;
             }
 
-            // TODO: register the new account here.
+            //if invalid userid or password
+            else if(response.equalsIgnoreCase("Illegal User")){
+                return false;
+            }
+            //Correct credentials
             return true;
         }
 
@@ -373,9 +382,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
+                Intent intent = new Intent(context, MenuActivity.class);
+                startActivity(intent);
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.setError("Incorrect email or password!");
                 mPasswordView.requestFocus();
             }
         }
@@ -385,6 +397,77 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
         }
+
+        //Hash password
+        public java.lang.String calculateHash() {
+            System.out.println("Calculating hash");
+            //Salt to be combined with password before hashing
+            String salt = "MASS";
+            String hashThis = password + salt;
+            try {
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                md.update(hashThis.getBytes());
+                byte[] digest = md.digest();
+
+                // Create Hex String
+                StringBuffer hexString = new StringBuffer();
+                for (int i=0; i<digest.length; i++)
+                    hexString.append(Integer.toHexString(0xFF & digest[i]));
+                return hexString.toString();
+
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(logInEmail).log(Level.SEVERE, null, ex);
+            }
+            return "";
+        }
+
+        public String doGet(String passHash) {
+            System.out.println("In doGettt");
+            // Make an HTTP GET passing the name on the URL line
+            String response = "";
+            HttpURLConnection conn;
+            int status = 0;
+
+            try {
+
+                // pass the userid,password
+                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "Login" +"&"+logInEmail +"&"+passHash);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                // tell the server what format we want back
+                conn.setRequestProperty("Accept", "text/plain");
+
+                // wait for response
+                status = conn.getResponseCode();
+
+                System.out.println(status);
+                // If things went poorly, don't try to read any response, just return.
+                if (status != 200) {
+                    // not using msg
+                    String msg = conn.getResponseMessage();
+                    return msg;
+                }
+                String output = "";
+                // things went well so let's read the response
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        (conn.getInputStream())));
+
+                while ((output = br.readLine()) != null) {
+                    response += output;
+
+                }
+
+                conn.disconnect();
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return response;
+        }
+
     }
 }
 

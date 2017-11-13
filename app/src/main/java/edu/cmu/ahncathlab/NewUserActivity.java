@@ -20,6 +20,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class NewUserActivity extends AppCompatActivity {
@@ -28,7 +32,6 @@ public class NewUserActivity extends AppCompatActivity {
     Button mRegisterButton1, mBackToLoginButton;
     RadioGroup rg;
     ProgressBar mProgressBar1;
-    ServerComm serverComm;
     NewUserActivity nua;
     final Context context = this;
 
@@ -40,8 +43,6 @@ public class NewUserActivity extends AppCompatActivity {
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
-        serverComm = new ServerComm();
 
         //Get view variables to be worked on ahead
         mFName = findViewById(R.id.rFName);
@@ -81,15 +82,10 @@ public class NewUserActivity extends AppCompatActivity {
         fName = mFName.getText().toString();
         lName = mLName.getText().toString();
         email = mEmail.getText().toString();
-        password = mPassword.getText().toString();
+        password = calculateHash();
         role = mRole.getText().toString();
 
 
-        System.out.println(fName);
-        System.out.println(lName);
-        System.out.println(email);
-        System.out.println(password);
-        System.out.println(role);
 
         //Register user by adding user info in the db
         String csvString = "AddUser" +","+ fName +","+ lName +","+ email +","+ password +","+ role;
@@ -159,6 +155,26 @@ public class NewUserActivity extends AppCompatActivity {
     }
 
 
+    //Hash password
+    public java.lang.String calculateHash() {
+        //Salt to be combined with password before hashing
+        String salt = "MASS";
+        String hashThis = mPassword.getText().toString() + salt;
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(hashThis.getBytes());
+            byte[] digest = md.digest();
 
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i=0; i<digest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & digest[i]));
+            return hexString.toString();
+
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(mEmail.getText().toString()).log(Level.SEVERE, null, ex);
+        }
+        return "";
+    }
 
 }

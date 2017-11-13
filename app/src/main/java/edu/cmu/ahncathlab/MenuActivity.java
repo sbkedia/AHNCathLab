@@ -205,8 +205,6 @@ public class MenuActivity extends AppCompatActivity
         @Override
         protected void onPostExecute(String s) {
 //            mprogressBar1.setVisibility(View.GONE);
-            Intent intent = new Intent(context, LoginActivity.class);
-            startActivity(intent);
         }
 
     }
