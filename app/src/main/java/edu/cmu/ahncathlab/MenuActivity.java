@@ -12,11 +12,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.TextView;
 
 
 public class MenuActivity extends AppCompatActivity
@@ -47,8 +49,13 @@ public class MenuActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        //Update menu bar details
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header=navigationView.getHeaderView(0);
+        TextView mEmail = (TextView)header.findViewById(R.id.emailID);
+        TextView logInEmail = findViewById(R.id.email);
+        mEmail.setText(LoginActivity.logInEmail);
 
         mChronometer = (Chronometer) findViewById(R.id.timerCh);
         start = (Button) findViewById(R.id.start_button);

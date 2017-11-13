@@ -4,17 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.view.View.OnClickListener;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 
 
 public class NewUserActivity extends AppCompatActivity {
@@ -23,28 +23,30 @@ public class NewUserActivity extends AppCompatActivity {
     Button mRegisterButton1, mBackToLoginButton;
     RadioGroup rg;
 //    ProgressBar mProgressBar1;
-    HttpURLConnection conn;
-
+    ServerComm serverComm;
+    NewUserActivity nua;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_new_user);
-//
-//        //Get view variables to be worked on ahead
-//        mFName = findViewById(R.id.rFName);
-//        mLName = findViewById(R.id.rLName);
-//        mEmail = findViewById(R.id.rEmailID);
-//        mPassword = findViewById(R.id.rPassword);
-//        rg = findViewById(R.id.rRadioGroup1);
-//        mRole = findViewById(rg.getCheckedRadioButtonId());
-//        mRegisterButton1 = findViewById(R.id.rRegister_button);
-//        mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
-//        mProgressBar1 = findViewById(R.id.progressBar1);
+        setContentView(R.layout.activity_new_user);
+        nua = this;
 
-        //Get MongoDb connection
-        ServerComm mDB = new ServerComm();
-        conn = mDB.getConnection();
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        serverComm = new ServerComm();
+
+        //Get view variables to be worked on ahead
+        mFName = findViewById(R.id.rFName);
+        mLName = findViewById(R.id.rLName);
+        mEmail = findViewById(R.id.rEmailID);
+        mPassword = findViewById(R.id.rPassword);
+        rg = findViewById(R.id.rRadioGroup1);
+        mRole = findViewById(rg.getCheckedRadioButtonId());
+        mRegisterButton1 = findViewById(R.id.rRegister_button);
+        mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
+//        mProgressBar1 = findViewById(R.id.progressBar1);
 
 
         mRegisterButton1.setOnClickListener(new OnClickListener() {
@@ -68,24 +70,23 @@ public class NewUserActivity extends AppCompatActivity {
 //        mprogressBar1.setVisibility(View.VISIBLE);
 
         //Get information from register form
-        String fName, Lname, Email, password, role;
+        String fName, lName, email, password, role;
         fName = mFName.getText().toString();
-        Lname = mLName.getText().toString();
-        Email = mEmail.getText().toString();
+        lName = mLName.getText().toString();
+        email = mEmail.getText().toString();
         password = mPassword.getText().toString();
         role = mRole.getText().toString();
 
 
         System.out.println(fName);
-        System.out.println(Lname);
-        System.out.println(Email);
+        System.out.println(lName);
+        System.out.println(email);
         System.out.println(password);
         System.out.println(role);
 
         //Register user by adding user info in the db
-
-
-//        new ExecuteTask().execute("agt", "Aritra", "Guha", "a@gmail", "dsgvds", role);
+        String csvString = "AddUser" +","+ fName +","+ lName +","+ email +","+ password +","+ role;
+        String response = serverComm.registerUser(csvString, nua);
         attemptLogin();
     }
 
@@ -150,6 +151,10 @@ public class NewUserActivity extends AppCompatActivity {
 //        hc.execute(hp);
 
 
+    }
+
+    public void setPostResponse(int i){
+        System.out.println(i);
     }
 
 
