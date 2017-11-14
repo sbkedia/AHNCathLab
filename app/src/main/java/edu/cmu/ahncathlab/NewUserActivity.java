@@ -50,7 +50,6 @@ public class NewUserActivity extends AppCompatActivity {
         mEmail = findViewById(R.id.rEmailID);
         mPassword = findViewById(R.id.rPassword);
         rg = findViewById(R.id.rRadioGroup1);
-        mRole = findViewById(rg.getCheckedRadioButtonId());
         mRegisterButton1 = findViewById(R.id.rRegister_button);
         mBackToLoginButton = findViewById(R.id.rAlreadyAUser_button);
         mProgressBar1 = findViewById(R.id.login_progress);
@@ -83,6 +82,7 @@ public class NewUserActivity extends AppCompatActivity {
         lName = mLName.getText().toString();
         email = mEmail.getText().toString();
         password = calculateHash();
+        mRole = findViewById(rg.getCheckedRadioButtonId());
         role = mRole.getText().toString();
 
 

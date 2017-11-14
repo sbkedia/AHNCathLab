@@ -101,6 +101,10 @@ public class MenuActivity extends AppCompatActivity
                        mChronometer.start();
                        start.setText("Pause");
 
+                       //Add 'in' time in track_info table
+                       String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
+                       new ExecuteTask().execute(csvString);
+
                    }
                 }
             }
