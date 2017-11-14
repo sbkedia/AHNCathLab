@@ -430,7 +430,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             try {
 
                 // pass the userid,password
-                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "Login" +"&"+logInEmail +"&"+passHash +"&"+ LoginActivity.logInEmail +"&"+ Build.MODEL +"&"+ Build.MANUFACTURER +"&"+ Build.VERSION.RELEASE);
+                URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "Login" +","+logInEmail +","+passHash +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 // tell the server what format we want back

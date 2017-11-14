@@ -128,7 +128,7 @@ public class NewUserActivity extends AppCompatActivity {
         try {
             System.out.println("In post");
             // Make call to a particular URL
-            URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/ ");
+            URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             // set request method to POST and send name value pair
