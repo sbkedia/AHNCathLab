@@ -215,7 +215,7 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
             try {
                 System.out.println(datePick.getText().toString());
                 // pass the userid,password
-                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "FetchUser" +"&"+ LoginActivity.logInEmail +"&"+datePick.getText().toString());
+                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "FetchUser" +"&"+ LoginActivity.logInEmail +"&"+datePick.getText().toString()+"&"+ LoginActivity.logInEmail +"&"+ Build.MODEL +"&"+ Build.MANUFACTURER +"&"+ Build.VERSION.RELEASE);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
 

@@ -84,7 +84,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        System.out.println(Build.MODEL + ", " + Build.MANUFACTURER + ", " + Build.VERSION.RELEASE + ", ");
         context = this;
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -431,7 +430,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             try {
 
                 // pass the userid,password
-                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "Login" +"&"+logInEmail +"&"+passHash);
+                URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/" + "Login" +"&"+logInEmail +"&"+passHash +"&"+ LoginActivity.logInEmail +"&"+ Build.MODEL +"&"+ Build.MANUFACTURER +"&"+ Build.VERSION.RELEASE);
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 // tell the server what format we want back
