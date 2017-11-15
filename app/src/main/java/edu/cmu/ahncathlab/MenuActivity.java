@@ -3,6 +3,7 @@ package edu.cmu.ahncathlab;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.design.widget.FloatingActionButton;
@@ -83,6 +84,9 @@ public class MenuActivity extends AppCompatActivity
 
                     //Add 'in' time in track_info table
                     String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
+                    //Add logging variables
+                    System.out.println(Build.MODEL + ", " + Build.MANUFACTURER + ", " + Build.VERSION.RELEASE + ", ");
+                    csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
                     new ExecuteTask().execute(csvString);
 
                 }
@@ -94,6 +98,7 @@ public class MenuActivity extends AppCompatActivity
 
                       //Add 'out' time in track_info table
                        String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "Out";
+                       csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
                     new ExecuteTask().execute(csvString);
                    }
                    else{
@@ -103,6 +108,7 @@ public class MenuActivity extends AppCompatActivity
 
                        //Add 'in' time in track_info table
                        String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
+                       csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
                        new ExecuteTask().execute(csvString);
 
                    }
@@ -224,7 +230,7 @@ public class MenuActivity extends AppCompatActivity
         try {
             System.out.println("In post");
             // Make call to a particular URL
-            URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/ ");
+            URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             // set request method to POST and send name value pair

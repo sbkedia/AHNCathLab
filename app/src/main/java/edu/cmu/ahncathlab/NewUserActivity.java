@@ -3,6 +3,7 @@ package edu.cmu.ahncathlab;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -89,6 +90,8 @@ public class NewUserActivity extends AppCompatActivity {
 
         //Register user by adding user info in the db
         String csvString = "AddUser" +","+ fName +","+ lName +","+ email +","+ password +","+ role;
+        //Add logging variables
+        csvString = csvString +","+ email +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
         new ExecuteTask().execute(csvString);
 //        String response = serverComm.registerUser(csvString, nua);
 //        attemptLogin();
@@ -125,7 +128,7 @@ public class NewUserActivity extends AppCompatActivity {
         try {
             System.out.println("In post");
             // Make call to a particular URL
-            URL url = new URL("http://10.0.2.2:8070/MongoDBFetchandAdd/MongoDBAdd/ ");
+            URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             // set request method to POST and send name value pair
