@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-feature android:name="android.hardware.bluetooth_le"  android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -33,16 +34,23 @@
             android:label="Track Time"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".NewUserActivity" />
-        <activity android:name=".CostActivity"
+        <activity
+            android:name=".CostActivity"
             android:label="Cost"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".GoogleSheetsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".GoogleSheetsActivity"
             android:label="Cost"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".GoogleDriveActivity" />
-        <activity android:name=".TimeActivity"
+        <activity
+            android:name=".TimeActivity"
             android:label="Time"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".BLEActivity"
+            android:label="@string/title_activity_ble"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

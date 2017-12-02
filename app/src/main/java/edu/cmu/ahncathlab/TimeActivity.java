@@ -3,6 +3,7 @@ package edu.cmu.ahncathlab;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,12 +15,15 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.io.BufferedReader;
@@ -30,12 +34,15 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,9 +54,11 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
     private Calendar myCalendar;
     private DatePickerDialog.OnDateSetListener date;
     private DisplayTime mDisplayTime;
+    private TimeActivity timeActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        timeActivity = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time);
 
@@ -75,6 +84,7 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
                 // TODO Auto-generated method stub
+                mDisplayTime = new DisplayTime();
                 myCalendar.set(Calendar.YEAR, year);
                 myCalendar.set(Calendar.MONTH, monthOfYear);
                 myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
@@ -174,6 +184,8 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
         finish();
     }
 
+
+
     /**
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
@@ -193,17 +205,128 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
             if (output == null || output.size() == 0) {
                 mOutputText.setText("No results returned.");
             } else {
-                int count = 0;
-                for(String dis : output){
-                    count++;
-                    mOutputText.append(dis +"\t");
-                    if(count%3==0){
-                        mOutputText.append("\n");
-                    }
-                }
+                createTimeTable(output);
+//                int count = 0;
+//                for(String dis : output){
+//                    count++;
+//                    mOutputText.append(dis +"\t");
+//                    if(count%3==0){
+//                        mOutputText.append("\n");
+//                    }
+//                }
 //                mOutputText.setText(TextUtils.join("\n", output));
 //                mOutputText.setText(TextUtils.join(" ", output));
             }
+        }
+
+        //Create table view
+        public void createTimeTable(List<String> output) {
+            TableLayout stk = (TableLayout) findViewById(R.id.timeTable);
+            stk.removeAllViews();
+            TableRow tbrow0 = new TableRow(timeActivity);
+            TextView tv0 = new TextView(timeActivity);
+            tv0.setText(" DATE ");
+            tv0.setTextColor(Color.GREEN);
+            tv0.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv0);
+            TextView tv1 = new TextView(timeActivity);
+            tv1.setText(" TIME ");
+            tv1.setTextColor(Color.RED);
+            tv1.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv1);
+            TextView tv2 = new TextView(timeActivity);
+            tv2.setText(" MOVEMENT ");
+            tv2.setTextColor(Color.WHITE);
+            tv2.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv2);
+            stk.addView(tbrow0);
+
+            String prevDate = "";
+            String currentDate = "";
+            long totalTime = 0;
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                Date dateIn = format.parse("00:00:00");
+                Date dateOut = format.parse("00:00:00");
+
+
+                for (int i = 0; i < output.size(); i = i + 3) {
+                    currentDate = output.get(i);
+
+                    //Calculate total time
+                    if (output.get(i + 2).equalsIgnoreCase("in")) {
+                        dateIn = format.parse(output.get(i + 1));
+                    } else {
+                        dateOut = format.parse(output.get(i + 1));
+                        totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
+                    }
+
+                    // Add total row
+                    if(!currentDate.equalsIgnoreCase(prevDate) && !prevDate.equalsIgnoreCase("")){
+                        TableRow tbrow = new TableRow(timeActivity);
+                        TextView t1v = new TextView(timeActivity);
+                        t1v.setText(" " + "Total Time" + " ");
+                        t1v.setTextColor(Color.CYAN);
+                        t1v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t1v);
+                        TextView t2v = new TextView(timeActivity);
+                        t2v.setText(" " + totalTime + " ");
+                        t2v.setTextColor(Color.CYAN);
+                        t2v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t2v);
+                        stk.addView(tbrow);
+
+                        //Add blank row after total
+                        stk.addView(new TableRow(timeActivity));
+                    }
+
+
+                    TableRow tbrow = new TableRow(timeActivity);
+                    TextView t1v = new TextView(timeActivity);
+                    t1v.setText(" " + output.get(i) + " ");
+                    t1v.setTextColor(Color.WHITE);
+                    t1v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t1v);
+                    TextView t2v = new TextView(timeActivity);
+                    t2v.setText(" " + output.get(i+1) + " ");
+                    t2v.setTextColor(Color.WHITE);
+                    t2v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t2v);
+                    TextView t3v = new TextView(timeActivity);
+                    t3v.setText(" " + output.get(i+2) + " ");
+                    t3v.setTextColor(Color.WHITE);
+                    t3v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t3v);
+                    stk.addView(tbrow);
+                }
+            }
+
+            catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            //Add final total time
+            String tTime = String.format("%d min, %d sec",
+                    TimeUnit.MILLISECONDS.toMinutes(totalTime),
+                    TimeUnit.MILLISECONDS.toSeconds(totalTime) -
+                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalTime))
+            );
+            TableRow tbrow = new TableRow(timeActivity);
+            TextView t1v = new TextView(timeActivity);
+            t1v.setText(" " + "Total Time" + " ");
+            t1v.setTextColor(Color.CYAN);
+            t1v.setGravity(Gravity.CENTER);
+            tbrow.addView(t1v);
+            TextView t2v = new TextView(timeActivity);
+            t2v.setText(" " + tTime + " ");
+            t2v.setTextColor(Color.CYAN);
+            t2v.setGravity(Gravity.CENTER);
+            tbrow.addView(t2v);
+            stk.addView(tbrow);
+
+            //Add blank row after total
+            stk.addView(new TableRow(timeActivity));
+
         }
 
         public List<String> doGet() {
@@ -236,8 +359,8 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
                         (conn.getInputStream())));
 
                 while ((output = br.readLine()) != null) {
-                        System.out.println(output);
-                        response.addAll(Arrays.asList(output.split(",")));
+                    System.out.println(output);
+                    response.addAll(Arrays.asList(output.split(",")));
                 }
                 System.out.println(response);
                 conn.disconnect();
