@@ -60,6 +60,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final int REQUEST_READ_CONTACTS = 0;
 
     public static String logInEmail;
+    public static String role;
     private String password;
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -453,8 +454,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 while ((output = br.readLine()) != null) {
                     response += output;
-
                 }
+                String[] res = response.split(",");
+                response = res[0];
+                role = res[1];
 
                 conn.disconnect();
 
