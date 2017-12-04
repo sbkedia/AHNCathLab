@@ -97,33 +97,95 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
     private void computeCost() {
         String emailID = LoginActivity.logInEmail;
 
-        HashMap<String, List<Double>> indirectCost = new HashMap<>();
-        HashMap<String, List<Double>> directCost = new HashMap<>();
-        HashMap<String, List<Double>> materialCost = new HashMap<>();
-        HashMap<String, List<Double>> patientTotals = new HashMap<>();
+        HashMap<String, List<Double>> charges = new HashMap<>();
+        HashMap<String, List<Double>> netRevEstimate = new HashMap<>();
+        HashMap<String, List<Double>> varSalary = new HashMap<>();
+        HashMap<String, List<Double>> varSupply = new HashMap<>();
+        HashMap<String, List<Double>> varOther = new HashMap<>();
+        HashMap<String, List<Double>> fixedSalary = new HashMap<>();
+        HashMap<String, List<Double>> fixedOther = new HashMap<>();
+        HashMap<String, List<Double>> allocationsCost = new HashMap<>();
+        HashMap<String, List<Double>> interestDep = new HashMap<>();
+        HashMap<String, List<Double>> hospitalOverhead = new HashMap<>();
+        HashMap<String, List<Double>> fixedIndirectAcademic = new HashMap<>();
+        HashMap<String, List<Double>> corporateOverhead = new HashMap<>();
+        HashMap<String, List<Double>> dayTotal = new HashMap<>();
+        HashMap<String, List<String>> physicianName = new HashMap<>();
 
-        double totalIndirect = 0, totalDirect = 0, totalMaterial = 0;
+        double totalCharges = 0, totalRevEstimate = 0, totalVarSalary = 0, totalVarSupply = 0, totalVarOther = 0,
+                totalFixedSalary = 0, totalFixedOther = 0, totalAllocationsCost = 0, totalInterestDep = 0, totalHospitalOverhead = 0,
+                totalFixedIndirectAcad = 0, totalCorporateOverhead = 0;
 
         for (String row: sheetValues) {
             if (row.contains(emailID)) {
                 String rowData[] = row.split(",");
-                if (!indirectCost.containsKey(rowData[1])) {
-                    List<Double> listIndirect = new ArrayList<>();
-                    listIndirect.add(Double.parseDouble(rowData[4]));
-                    indirectCost.put(rowData[1], listIndirect);
+                if (!charges.containsKey(rowData[2])) {    // If selected date in sheet row
+                    List<Double> listCharges = new ArrayList<>();
+                    listCharges.add(Double.parseDouble(rowData[4]));
+                    charges.put(rowData[2], listCharges);
 
-                    List<Double> listDirect = new ArrayList<>();
-                    listDirect.add(Double.parseDouble(rowData[6]));
-                    directCost.put(rowData[1], listDirect);
+                    List<Double> listNet = new ArrayList<>();
+                    listNet.add(Double.parseDouble(rowData[5]));
+                    netRevEstimate.put(rowData[2], listNet);
 
-                    List<Double> listMaterial = new ArrayList<>();
-                    listMaterial.add(Double.parseDouble(rowData[5]));
-                    materialCost.put(rowData[1], listMaterial);
+                    List<Double> listVarSalary = new ArrayList<>();
+                    listVarSalary.add(Double.parseDouble(rowData[6]));
+                    varSalary.put(rowData[2], listVarSalary);
+
+                    List<Double> listVarSupply = new ArrayList<>();
+                    listVarSupply.add(Double.parseDouble(rowData[7]));
+                    varSupply.put(rowData[2], listVarSupply);
+
+                    List<Double> listOther = new ArrayList<>();
+                    listOther.add(Double.parseDouble(rowData[8]));
+                    varOther.put(rowData[2], listOther);
+
+                    List<Double> listFixedSalary = new ArrayList<>();
+                    listFixedSalary.add(Double.parseDouble(rowData[9]));
+                    fixedSalary.put(rowData[2], listFixedSalary);
+
+                    List<Double> listFixedOther = new ArrayList<>();
+                    listFixedOther.add(Double.parseDouble(rowData[10]));
+                    fixedOther.put(rowData[2], listFixedOther);
+
+                    List<Double> listAllocationsCost = new ArrayList<>();
+                    listAllocationsCost.add(Double.parseDouble(rowData[11]));
+                    allocationsCost.put(rowData[2], listAllocationsCost);
+
+                    List<Double> listInterestDep = new ArrayList<>();
+                    listInterestDep.add(Double.parseDouble(rowData[12]));
+                    interestDep.put(rowData[2], listInterestDep);
+
+                    List<Double> listHospitalOverhead = new ArrayList<>();
+                    listHospitalOverhead.add(Double.parseDouble(rowData[13]));
+                    hospitalOverhead.put(rowData[2], listHospitalOverhead);
+
+                    List<Double> listFixedIndirectAcad = new ArrayList<>();
+                    listFixedIndirectAcad.add(Double.parseDouble(rowData[14]));
+                    fixedIndirectAcademic.put(rowData[2], listFixedIndirectAcad);
+
+                    List<Double> listCorporateOverhead = new ArrayList<>();
+                    listCorporateOverhead.add(Double.parseDouble(rowData[15]));
+                    corporateOverhead.put(rowData[2], listCorporateOverhead);
+
+                    List<String> listNames = new ArrayList<>();
+                    listNames.add(rowData[0]);
+                    physicianName.put(rowData[2], listNames);
                 }
                 else {
-                    indirectCost.get(rowData[1]).add(Double.parseDouble(rowData[4]));
-                    directCost.get(rowData[1]).add(Double.parseDouble(rowData[6]));
-                    materialCost.get(rowData[1]).add(Double.parseDouble(rowData[5]));
+                    charges.get(rowData[2]).add(Double.parseDouble(rowData[4]));
+                    netRevEstimate.get(rowData[2]).add(Double.parseDouble(rowData[5]));
+                    varSalary.get(rowData[2]).add(Double.parseDouble(rowData[6]));
+                    varSupply.get(rowData[2]).add(Double.parseDouble(rowData[7]));
+                    varOther.get(rowData[2]).add(Double.parseDouble(rowData[8]));
+                    fixedSalary.get(rowData[2]).add(Double.parseDouble(rowData[9]));
+                    fixedOther.get(rowData[2]).add(Double.parseDouble(rowData[10]));
+                    allocationsCost.get(rowData[2]).add(Double.parseDouble(rowData[11]));
+                    interestDep.get(rowData[2]).add(Double.parseDouble(rowData[12]));
+                    hospitalOverhead.get(rowData[2]).add(Double.parseDouble(rowData[13]));
+                    fixedIndirectAcademic.get(rowData[2]).add(Double.parseDouble(rowData[14]));
+                    corporateOverhead.get(rowData[2]).add(Double.parseDouble(rowData[15]));
+                    physicianName.get(rowData[2]).add(rowData[0]);
                 }
             }
         }
@@ -131,31 +193,49 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
         List<String> result = new ArrayList<>();
         result.add("\n");
 
-        for (String key: indirectCost.keySet()) {
-            result.add("Patient: " + key);
-            for (Double cost: indirectCost.get(key))
-                totalIndirect += cost;
-            for (Double cost: directCost.get(key))
-                totalDirect += cost;
-            for (Double cost: materialCost.get(key))
-                totalMaterial += cost;
-            result.add("Indirect costs: " + totalIndirect);
-            result.add("Direct costs: " + totalDirect);
-            result.add("Material costs: " + totalMaterial+"\n");
-            patientTotals.put(key, Arrays.asList(totalIndirect, totalDirect, totalMaterial));
+        for (String key: charges.keySet()) {
+            result.add("Date: " + key);
+            for (Double cost: charges.get(key))
+                totalCharges += cost;
+            for (Double cost: netRevEstimate.get(key))
+                totalRevEstimate += cost;
+            for (Double cost: varSalary.get(key))
+                totalVarSalary += cost;
+            for (Double cost: varSupply.get(key))
+                totalVarSupply += cost;
+            for (Double cost: varOther.get(key))
+                totalVarOther += cost;
+            for (Double cost: fixedSalary.get(key))
+                totalFixedSalary += cost;
+            for (Double cost: fixedOther.get(key))
+                totalFixedOther += cost;
+            for (Double cost: allocationsCost.get(key))
+                totalAllocationsCost += cost;
+            for (Double cost: interestDep.get(key))
+                totalInterestDep += cost;
+            for (Double cost: hospitalOverhead.get(key))
+                totalHospitalOverhead += cost;
+            for (Double cost: fixedIndirectAcademic.get(key))
+                totalFixedIndirectAcad += cost;
+            for (Double cost: corporateOverhead.get(key))
+                totalCorporateOverhead += cost;
+            result.add("Total charges: " + totalCharges);
+            result.add("Total net revenue estimate: " + totalRevEstimate);
+            result.add("Total variable salary: " + totalVarSalary+"\n");
+//            patientTotals.put(key, Arrays.asList(totalIndirect, totalDirect, totalMaterial));
         }
 
-        System.out.println("Indirect cost:");
-        System.out.println(indirectCost + "\n");
-
-        System.out.println("Direct cost:");
-        System.out.println(directCost + "\n");
-
-        System.out.println("Material cost:");
-        System.out.println(materialCost + "\n");
-
-        System.out.println("Patient totals:");
-        System.out.println(patientTotals);
+//        System.out.println("Indirect cost:");
+//        System.out.println(indirectCost + "\n");
+//
+//        System.out.println("Direct cost:");
+//        System.out.println(directCost + "\n");
+//
+//        System.out.println("Material cost:");
+//        System.out.println(materialCost + "\n");
+//
+//        System.out.println("Patient totals:");
+//        System.out.println(patientTotals);
 
         mOutputText.setText(TextUtils.join("\n", result));
     }
@@ -375,7 +455,7 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
          */
         private List<String> getDataFromApi() throws IOException {
             String spreadsheetId = ID;
-            String range = "Sheet1!A1:G";
+            String range = "Sheet1!A1:AB";
             List<String> results = new ArrayList<String>();
             ValueRange response = this.mService.spreadsheets().values()
                     .get(spreadsheetId, range)
@@ -383,9 +463,12 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
             List<List<Object>> values = response.getValues();
             if (values != null) {
                 for (List row : values) {
-                    results.add(row.get(0) + "," + row.get(1) + ","
-                            + row.get(2) + "," + row.get(3) + "," + row.get(4)
-                            + "," + row.get(5) + "," + row.get(6));
+                    results.add(row.get(7) + "," + row.get(1) + ","
+                            + row.get(26) + "," + row.get(9) + "," + row.get(13) + ","
+                            + row.get(14) + "," + row.get(15) + "," + row.get(16) + ","
+                            + row.get(17) + "," + row.get(18) + "," + row.get(19) + ","
+                            + row.get(20) + "," + row.get(21) + "," + row.get(22)
+                            + "," + row.get(23) + "," + row.get(24));
                 }
             }
             return results;

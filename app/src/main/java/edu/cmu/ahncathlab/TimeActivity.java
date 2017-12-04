@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -192,6 +193,8 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
      */
     public class DisplayTime extends AsyncTask<Void, Void, List<String>> {
 
+        TableLayout stk = (TableLayout) findViewById(R.id.timeTable);
+
         @Override
         protected List<String> doInBackground(Void... params) {
             //Check if correct credentials
@@ -202,7 +205,10 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
         @Override
         protected void onPostExecute(List<String> output) {
 
-            if (output == null || output.size() == 0) {
+            stk.removeAllViews();
+            mOutputText.setText("");
+
+            if (output == null || output.size() == 1) {
                 mOutputText.setText("No results returned.");
             } else {
                 createTimeTable(output);
@@ -221,111 +227,116 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
         //Create table view
         public void createTimeTable(List<String> output) {
-            TableLayout stk = (TableLayout) findViewById(R.id.timeTable);
-            stk.removeAllViews();
-            TableRow tbrow0 = new TableRow(timeActivity);
-            TextView tv0 = new TextView(timeActivity);
-            tv0.setText(" DATE ");
-            tv0.setTextColor(Color.GREEN);
-            tv0.setGravity(Gravity.CENTER);
-            tbrow0.addView(tv0);
-            TextView tv1 = new TextView(timeActivity);
-            tv1.setText(" TIME ");
-            tv1.setTextColor(Color.RED);
-            tv1.setGravity(Gravity.CENTER);
-            tbrow0.addView(tv1);
-            TextView tv2 = new TextView(timeActivity);
-            tv2.setText(" MOVEMENT ");
-            tv2.setTextColor(Color.WHITE);
-            tv2.setGravity(Gravity.CENTER);
-            tbrow0.addView(tv2);
-            stk.addView(tbrow0);
 
-            String prevDate = "";
-            String currentDate = "";
-            long totalTime = 0;
-            try {
-                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-                Date dateIn = format.parse("00:00:00");
-                Date dateOut = format.parse("00:00:00");
+            if(LoginActivity.role.toLowerCase().equals("physician")) {
+                TableRow tbrow0 = new TableRow(timeActivity);
+                TextView tv0 = new TextView(timeActivity);
+                tv0.setText(" DATE ");
+                tv0.setTextColor(Color.GREEN);
+                tv0.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv0);
+                TextView tv1 = new TextView(timeActivity);
+                tv1.setText(" TIME ");
+                tv1.setTextColor(Color.GREEN);
+                tv1.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv1);
+                TextView tv2 = new TextView(timeActivity);
+                tv2.setText(" MOVEMENT ");
+                tv2.setTextColor(Color.WHITE);
+                tv2.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv2);
+                stk.addView(tbrow0);
+
+                String prevDate = "";
+                String currentDate = "";
+                long totalTime = 0;
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                    Date dateIn = format.parse("00:00:00");
+                    Date dateOut = format.parse("00:00:00");
 
 
-                for (int i = 0; i < output.size(); i = i + 3) {
-                    currentDate = output.get(i);
+                    for (int i = 0; i < output.size(); i = i + 3) {
+                        currentDate = output.get(i);
 
-                    //Calculate total time
-                    if (output.get(i + 2).equalsIgnoreCase("in")) {
-                        dateIn = format.parse(output.get(i + 1));
-                    } else {
-                        dateOut = format.parse(output.get(i + 1));
-                        totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
-                    }
+                        //Calculate total time
+                        if (output.get(i + 2).equalsIgnoreCase("in")) {
+                            dateIn = format.parse(output.get(i + 1));
+                        } else {
+                            dateOut = format.parse(output.get(i + 1));
+                            totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
+                        }
 
-                    // Add total row
-                    if(!currentDate.equalsIgnoreCase(prevDate) && !prevDate.equalsIgnoreCase("")){
+                        // Add total row
+                        if(!currentDate.equalsIgnoreCase(prevDate) && !prevDate.equalsIgnoreCase("")){
+                            TableRow tbrow = new TableRow(timeActivity);
+                            TextView t1v = new TextView(timeActivity);
+                            t1v.setText(" " + "Total Time" + " ");
+                            t1v.setTextColor(Color.CYAN);
+                            t1v.setGravity(Gravity.CENTER);
+                            tbrow.addView(t1v);
+                            TextView t2v = new TextView(timeActivity);
+                            t2v.setText(" " + totalTime + " ");
+                            t2v.setTextColor(Color.CYAN);
+                            t2v.setGravity(Gravity.CENTER);
+                            tbrow.addView(t2v);
+                            stk.addView(tbrow);
+
+                            //Add blank row after total
+                            stk.addView(new TableRow(timeActivity));
+                        }
+
+
                         TableRow tbrow = new TableRow(timeActivity);
                         TextView t1v = new TextView(timeActivity);
-                        t1v.setText(" " + "Total Time" + " ");
-                        t1v.setTextColor(Color.CYAN);
+                        t1v.setText(" " + output.get(i) + " ");
+                        t1v.setTextColor(Color.WHITE);
                         t1v.setGravity(Gravity.CENTER);
                         tbrow.addView(t1v);
                         TextView t2v = new TextView(timeActivity);
-                        t2v.setText(" " + totalTime + " ");
-                        t2v.setTextColor(Color.CYAN);
+                        t2v.setText(" " + output.get(i+1) + " ");
+                        t2v.setTextColor(Color.WHITE);
                         t2v.setGravity(Gravity.CENTER);
                         tbrow.addView(t2v);
+                        TextView t3v = new TextView(timeActivity);
+                        t3v.setText(" " + output.get(i+2) + " ");
+                        t3v.setTextColor(Color.WHITE);
+                        t3v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t3v);
                         stk.addView(tbrow);
-
-                        //Add blank row after total
-                        stk.addView(new TableRow(timeActivity));
                     }
-
-
-                    TableRow tbrow = new TableRow(timeActivity);
-                    TextView t1v = new TextView(timeActivity);
-                    t1v.setText(" " + output.get(i) + " ");
-                    t1v.setTextColor(Color.WHITE);
-                    t1v.setGravity(Gravity.CENTER);
-                    tbrow.addView(t1v);
-                    TextView t2v = new TextView(timeActivity);
-                    t2v.setText(" " + output.get(i+1) + " ");
-                    t2v.setTextColor(Color.WHITE);
-                    t2v.setGravity(Gravity.CENTER);
-                    tbrow.addView(t2v);
-                    TextView t3v = new TextView(timeActivity);
-                    t3v.setText(" " + output.get(i+2) + " ");
-                    t3v.setTextColor(Color.WHITE);
-                    t3v.setGravity(Gravity.CENTER);
-                    tbrow.addView(t3v);
-                    stk.addView(tbrow);
                 }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //Add final total time
+                String tTime = String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(totalTime),
+                        TimeUnit.MILLISECONDS.toSeconds(totalTime) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalTime))
+                );
+                TableRow tbrow = new TableRow(timeActivity);
+                TextView t1v = new TextView(timeActivity);
+                t1v.setText(" " + "Total Time" + " ");
+                t1v.setTextColor(Color.CYAN);
+                t1v.setGravity(Gravity.CENTER);
+                tbrow.addView(t1v);
+                TextView t2v = new TextView(timeActivity);
+                t2v.setText(" " + tTime + " ");
+                t2v.setTextColor(Color.CYAN);
+                t2v.setGravity(Gravity.CENTER);
+                tbrow.addView(t2v);
+                stk.addView(tbrow);
+
+                //Add blank row after total
+                stk.addView(new TableRow(timeActivity));
             }
 
-            catch (ParseException e) {
-                e.printStackTrace();
+            // Display time for manager
+            else {
+
             }
-
-            //Add final total time
-            String tTime = String.format("%d min, %d sec",
-                    TimeUnit.MILLISECONDS.toMinutes(totalTime),
-                    TimeUnit.MILLISECONDS.toSeconds(totalTime) -
-                            TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalTime))
-            );
-            TableRow tbrow = new TableRow(timeActivity);
-            TextView t1v = new TextView(timeActivity);
-            t1v.setText(" " + "Total Time" + " ");
-            t1v.setTextColor(Color.CYAN);
-            t1v.setGravity(Gravity.CENTER);
-            tbrow.addView(t1v);
-            TextView t2v = new TextView(timeActivity);
-            t2v.setText(" " + tTime + " ");
-            t2v.setTextColor(Color.CYAN);
-            t2v.setGravity(Gravity.CENTER);
-            tbrow.addView(t2v);
-            stk.addView(tbrow);
-
-            //Add blank row after total
-            stk.addView(new TableRow(timeActivity));
 
         }
 
@@ -336,35 +347,68 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
             int status = 0;
 
             try {
-                System.out.println(datePick.getText().toString());
-                // pass the userid,password
-                URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchUser" +","+ LoginActivity.logInEmail +","+datePick.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
 
-                // wait for response
-                status = conn.getResponseCode();
+                if(LoginActivity.role.toLowerCase().equals("physician")) {
 
-                System.out.println(status);
-                // If things went poorly, don't try to read any response, just return.
-                if (status != 200) {
-                    // not using msg
-                    String msg = conn.getResponseMessage();
-                    response.add(msg);
-                    return response;
+                    System.out.println(datePick.getText().toString());
+                    // pass the userid,password
+                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchUser" +","+ LoginActivity.logInEmail +","+datePick.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+
+                    // wait for response
+                    status = conn.getResponseCode();
+
+                    System.out.println(status);
+                    // If things went poorly, don't try to read any response, just return.
+                    if (status != 200) {
+                        // not using msg
+                        String msg = conn.getResponseMessage();
+                        response.add(msg);
+                        return response;
+                    }
+                    String output = "";
+                    // things went well so let's read the response
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (conn.getInputStream())));
+
+                    while ((output = br.readLine()) != null) {
+                        System.out.println(output);
+                        response.addAll(Arrays.asList(output.split(",")));
+                    }
+                    System.out.println(response);
+                    conn.disconnect();
                 }
-                String output = "";
-                // things went well so let's read the response
-                BufferedReader br = new BufferedReader(new InputStreamReader(
-                        (conn.getInputStream())));
 
-                while ((output = br.readLine()) != null) {
-                    System.out.println(output);
-                    response.addAll(Arrays.asList(output.split(",")));
+                else {
+
+                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchManager" +","+ LoginActivity.logInEmail +","+datePick.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                    conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("GET");
+
+                    // wait for response
+                    status = conn.getResponseCode();
+
+                    System.out.println(status);
+                    // If things went poorly, don't try to read any response, just return.
+                    if (status != 200) {
+                        // not using msg
+                        String msg = conn.getResponseMessage();
+                        response.add(msg);
+                        return response;
+                    }
+                    String output = "";
+                    // things went well so let's read the response
+                    BufferedReader br = new BufferedReader(new InputStreamReader(
+                            (conn.getInputStream())));
+
+                    while ((output = br.readLine()) != null) {
+                        System.out.println(output);
+                        response.addAll(Arrays.asList(output.split(",")));
+                    }
+                    System.out.println(response);
+                    conn.disconnect();
                 }
-                System.out.println(response);
-                conn.disconnect();
-
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (IOException e) {
