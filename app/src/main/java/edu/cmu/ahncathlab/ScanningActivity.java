@@ -64,6 +64,9 @@ public class ScanningActivity extends ListActivity {
         if(mBleWrapper.checkBleHardwareAvailable() == false) {
         	bleMissing();
         }
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
+//        finish();
     }
 
     @Override
