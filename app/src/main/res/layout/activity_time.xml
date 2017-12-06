@@ -35,10 +35,21 @@
             </android.support.design.widget.AppBarLayout>
 
             <EditText
-                android:id="@+id/pickDate"
+                android:id="@+id/pickDateStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select Date"
+                android:hint="Select Start Date"
+                android:imeOptions="actionUnspecified"
+                android:inputType="date"
+                android:maxLines="1"
+                android:clickable="true"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/pickDateEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select End Date"
                 android:imeOptions="actionUnspecified"
                 android:inputType="date"
                 android:maxLines="1"

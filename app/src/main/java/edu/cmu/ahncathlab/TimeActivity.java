@@ -27,6 +27,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import com.squareup.timessquare.CalendarPickerView;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -47,13 +49,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static com.squareup.timessquare.CalendarPickerView.SelectionMode.RANGE;
+
 public class TimeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     final Context context = this;
     private TextView mOutputText;
-    private EditText datePick;
-    private Calendar myCalendar;
-    private DatePickerDialog.OnDateSetListener date;
+    private EditText datePickStart;
+    private EditText datePickEnd;
+    private Calendar myCalendarStart;
+    private Calendar myCalendarEnd;
+    private DatePickerDialog.OnDateSetListener dateStart;
+    private DatePickerDialog.OnDateSetListener dateEnd;
     private DisplayTime mDisplayTime;
     private TimeActivity timeActivity;
 
@@ -63,9 +70,11 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time);
 
-        myCalendar = Calendar.getInstance();
+        myCalendarStart = Calendar.getInstance();
+        myCalendarEnd = Calendar.getInstance();
         mOutputText = findViewById(R.id.timeView);
-        datePick= findViewById(R.id.pickDate);
+        datePickStart = findViewById(R.id.pickDateStart);
+        datePickEnd = findViewById(R.id.pickDateEnd);
 
         Toolbar toolbar = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
@@ -79,39 +88,70 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
         mDisplayTime = new DisplayTime();
 
-        date = new DatePickerDialog.OnDateSetListener() {
+        dateStart = new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
                 // TODO Auto-generated method stub
                 mDisplayTime = new DisplayTime();
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabel();
+                myCalendarStart.set(Calendar.YEAR, year);
+                myCalendarStart.set(Calendar.MONTH, monthOfYear);
+                myCalendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabelStart();
                 mDisplayTime.execute((Void) null);
             }
 
         };
-        datePick.setOnClickListener(new View.OnClickListener() {
+        datePickStart.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
-                new DatePickerDialog(context, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                new DatePickerDialog(context, dateStart, myCalendarStart
+                        .get(Calendar.YEAR), myCalendarStart.get(Calendar.MONTH),
+                        myCalendarStart.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        dateEnd = new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear,
+                                  int dayOfMonth) {
+                mDisplayTime = new DisplayTime();
+                myCalendarEnd.set(Calendar.YEAR, year);
+                myCalendarEnd.set(Calendar.MONTH, monthOfYear);
+                myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                updateLabelEnd();
+                mDisplayTime.execute((Void) null);
+            }
+
+        };
+        datePickEnd.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(context, dateEnd, myCalendarEnd
+                        .get(Calendar.YEAR), myCalendarEnd.get(Calendar.MONTH),
+                        myCalendarEnd.get(Calendar.DAY_OF_MONTH)).show();
             }
         });
 
     }
 
-    private void updateLabel() {
+    private void updateLabelStart() {
         String myFormat = "MM/dd/yyyy"; //In which you need put here
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
-        datePick.setText(sdf.format(myCalendar.getTime()));
+        datePickStart.setText(sdf.format(myCalendarStart.getTime()));
+    }
+
+    private void updateLabelEnd() {
+        String myFormat = "MM/dd/yyyy"; //In which you need put here
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+
+        datePickEnd.setText(sdf.format(myCalendarEnd.getTime()));
     }
 
     @Override
@@ -350,9 +390,9 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
                 if(LoginActivity.role.toLowerCase().equals("physician")) {
 
-                    System.out.println(datePick.getText().toString());
+                    System.out.println(datePickStart.getText().toString());
                     // pass the userid,password
-                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchUser" +","+ LoginActivity.logInEmail +","+datePick.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchUser" +","+ LoginActivity.logInEmail +","+datePickStart.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
 
@@ -382,7 +422,7 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
                 else {
 
-                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchManager" +","+ LoginActivity.logInEmail +","+datePick.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchManager" +","+ LoginActivity.logInEmail +","+datePickStart.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
 

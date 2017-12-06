@@ -1,6 +1,7 @@
 package edu.cmu.ahncathlab;
 
 import android.accounts.AccountManager;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -23,6 +24,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -39,13 +42,18 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
+
+import static edu.cmu.ahncathlab.TimeActivity.*;
 
 public class GoogleSheetsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -75,13 +83,12 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
         //Add navigation bar to screen
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout3);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer,toolbar,  R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         Bundle bundle = getIntent().getExtras();
         ID = bundle.getString("FileID");
-
 
         mOutputText = findViewById(R.id.mOutputText);
         mCredential = GoogleAccountCredential.usingOAuth2(
@@ -95,7 +102,9 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
     }
 
     private void computeCost() {
-        String emailID = LoginActivity.logInEmail;
+
+        String startDate = String.valueOf(CostActivity.datePickStart.getText());
+        String endDate = String.valueOf(CostActivity.datePickEnd.getText());
 
         HashMap<String, List<Double>> charges = new HashMap<>();
         HashMap<String, List<Double>> netRevEstimate = new HashMap<>();
@@ -117,7 +126,7 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
                 totalFixedIndirectAcad = 0, totalCorporateOverhead = 0;
 
         for (String row: sheetValues) {
-            if (row.contains(emailID)) {
+            if (row.contains("01/01/16")) {
                 String rowData[] = row.split(",");
                 if (!charges.containsKey(rowData[2])) {    // If selected date in sheet row
                     List<Double> listCharges = new ArrayList<>();
@@ -225,17 +234,8 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
 //            patientTotals.put(key, Arrays.asList(totalIndirect, totalDirect, totalMaterial));
         }
 
-//        System.out.println("Indirect cost:");
-//        System.out.println(indirectCost + "\n");
-//
-//        System.out.println("Direct cost:");
-//        System.out.println(directCost + "\n");
-//
-//        System.out.println("Material cost:");
-//        System.out.println(materialCost + "\n");
-//
-//        System.out.println("Patient totals:");
-//        System.out.println(patientTotals);
+        System.out.println("Total charges:");
+        System.out.println(totalCharges + "\n");
 
         mOutputText.setText(TextUtils.join("\n", result));
     }

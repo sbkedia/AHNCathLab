@@ -33,11 +33,33 @@
                     app:popupTheme="@style/AppTheme.PopupOverlay" />
             </android.support.design.widget.AppBarLayout>
 
-            <TextView
-                android:id="@+id/textView"
+            <EditText
+                android:id="@+id/pickDateStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="To design - Cost" />
+                android:hint="Select Start Date"
+                android:imeOptions="actionUnspecified"
+                android:inputType="date"
+                android:maxLines="1"
+                android:clickable="true"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/pickDateEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select End Date"
+                android:imeOptions="actionUnspecified"
+                android:inputType="date"
+                android:maxLines="1"
+                android:clickable="true"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/showCost"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Display Cost" />
 
         </LinearLayout>
 
