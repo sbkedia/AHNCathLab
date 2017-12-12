@@ -64,8 +64,6 @@ public class ScanningActivity extends ListActivity {
         if(mBleWrapper.checkBleHardwareAvailable() == false) {
         	bleMissing();
         }
-        Intent intent = new Intent(this, MenuActivity.class);
-        startActivity(intent);
 //        finish();
     }
 
@@ -105,7 +103,13 @@ public class ScanningActivity extends ListActivity {
 		    startActivityForResult(enableBtIntent, ENABLE_BT_REQUEST_ID);
 		    // see onActivityResult to check what is the status of our request
 		}
-    	
+		else{
+            Intent intent = new Intent(this, MenuActivity.class);
+            startActivity(intent);
+        }
+
+//
+
     	// initialize BleWrapper object
         mBleWrapper.initialize();
     	
@@ -170,6 +174,8 @@ public class ScanningActivity extends ListActivity {
 		    }
         }
         super.onActivityResult(requestCode, resultCode, data);
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
     }
 
 	/* make sure that potential scanning will take no longer
@@ -213,7 +219,9 @@ public class ScanningActivity extends ListActivity {
 
     private void btDisabled() {
     	Toast.makeText(this, "Sorry, BT has to be turned ON for us to work!", Toast.LENGTH_LONG).show();
-        finish();    	
+        Intent intent = new Intent(this, MenuActivity.class);
+        startActivity(intent);
+//        finish();
     }
     
     private void bleMissing() {

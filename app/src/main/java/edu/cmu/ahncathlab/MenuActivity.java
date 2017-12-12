@@ -1,37 +1,23 @@
 package edu.cmu.ahncathlab;
 
+import android.bluetooth.BluetoothDevice;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.SystemClock;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
-
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 
 public class MenuActivity extends AppCompatActivity
@@ -40,6 +26,8 @@ public class MenuActivity extends AppCompatActivity
     Chronometer mChronometer;
     Button start, stop, restart;
     final Context context = this;
+    private BleWrapper mBleWrapper = null;
+    private TextView bleIndicator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,75 +43,91 @@ public class MenuActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        setBleText();
+
+//        mChronometer = (Chronometer) findViewById(R.id.timerCh);
+//        start = (Button) findViewById(R.id.start_button);
+//        restart = (Button) findViewById(R.id.restart_button);
+//
+//        restart.setEnabled(false);
+
+//        start.setOnClickListener(new View.OnClickListener() {
+//            long timeStopped;
+////            boolean isStarted = false;
+//            @Override
+//            public void onClick(View view) {
+//                String email = LoginActivity.logInEmail;
+//                DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+//                DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+//                Date date = new Date();
+//                String todayDate = dateFormat.format(date);
+//                String  todayTime = timeFormat.format(date);
+//
+//                if(!restart.isEnabled()){
+//                    timeStopped = 0;
+//                    mChronometer.setBase(SystemClock.elapsedRealtime());
+//                    mChronometer.start();
+//                    start.setText("Pause");
+//                    restart.setEnabled(true);
+//
+//                    //Add 'in' time in track_info table
+//                    String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
+//                    //Add logging variables
+//                    System.out.println(Build.MODEL + ", " + Build.MANUFACTURER + ", " + Build.VERSION.RELEASE + ", ");
+//                    csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
+//                    new ExecuteTask().execute(csvString);
+//
+//                }
+//                else{
+//                   if(start.getText().equals("Pause")){
+//                      timeStopped = mChronometer.getBase() - SystemClock.elapsedRealtime();
+//                      mChronometer.stop();
+//                      start.setText("Start");
+//
+//                      //Add 'out' time in track_info table
+//                       String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "Out";
+//                       csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
+//                    new ExecuteTask().execute(csvString);
+//                   }
+//                   else{
+//                       mChronometer.setBase(SystemClock.elapsedRealtime() + timeStopped);
+//                       mChronometer.start();
+//                       start.setText("Pause");
+//
+//                       //Add 'in' time in track_info table
+//                       String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
+//                       csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
+//                       new ExecuteTask().execute(csvString);
+//
+//                   }
+//                }
+//            }
+//        });
 
 
-        mChronometer = (Chronometer) findViewById(R.id.timerCh);
-        start = (Button) findViewById(R.id.start_button);
-        restart = (Button) findViewById(R.id.restart_button);
+//        restart.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                restart.setEnabled(false);
+//                mChronometer.setBase(SystemClock.elapsedRealtime());
+//            }
+//        });
+    }
 
-        restart.setEnabled(false);
+    public void setBleText(){
 
-        start.setOnClickListener(new View.OnClickListener() {
-            long timeStopped;
-//            boolean isStarted = false;
-            @Override
-            public void onClick(View view) {
-                String email = LoginActivity.logInEmail;
-                DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-                DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-                Date date = new Date();
-                String todayDate = dateFormat.format(date);
-                String  todayTime = timeFormat.format(date);
-
-                if(!restart.isEnabled()){
-                    timeStopped = 0;
-                    mChronometer.setBase(SystemClock.elapsedRealtime());
-                    mChronometer.start();
-                    start.setText("Pause");
-                    restart.setEnabled(true);
-
-                    //Add 'in' time in track_info table
-                    String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
-                    //Add logging variables
-                    System.out.println(Build.MODEL + ", " + Build.MANUFACTURER + ", " + Build.VERSION.RELEASE + ", ");
-                    csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
-                    new ExecuteTask().execute(csvString);
-
-                }
-                else{
-                   if(start.getText().equals("Pause")){
-                      timeStopped = mChronometer.getBase() - SystemClock.elapsedRealtime();
-                      mChronometer.stop();
-                      start.setText("Start");
-
-                      //Add 'out' time in track_info table
-                       String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "Out";
-                       csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
-                    new ExecuteTask().execute(csvString);
-                   }
-                   else{
-                       mChronometer.setBase(SystemClock.elapsedRealtime() + timeStopped);
-                       mChronometer.start();
-                       start.setText("Pause");
-
-                       //Add 'in' time in track_info table
-                       String csvString = "AddTrack" +","+ email +","+ todayDate +","+ todayTime +","+ "In";
-                       csvString = csvString +","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE;
-                       new ExecuteTask().execute(csvString);
-
-                   }
-                }
-            }
-        });
-
-
-        restart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                restart.setEnabled(false);
-                mChronometer.setBase(SystemClock.elapsedRealtime());
-            }
-        });
+        mBleWrapper = new BleWrapper(this, new BleWrapperUiCallbacks.Null());
+        boolean bleOn = mBleWrapper.isBtEnabled();
+        System.out.println("BLEEEEEEEEE: " + bleOn);
+        bleIndicator = findViewById(R.id.bleIndicator);
+        if(bleOn){
+            bleIndicator.setText("Your Bluetooth is on");
+            bleIndicator.setBackgroundColor(Color.GREEN);
+        }
+        else{
+            bleIndicator.setText("Your Bluetooth is off! Please turn it on to correctly use this app.");
+            bleIndicator.setBackgroundColor(Color.RED);
+        }
     }
 
     @Override
@@ -148,6 +152,11 @@ public class MenuActivity extends AppCompatActivity
         TextView mEmail = (TextView)header.findViewById(R.id.emailID);
         TextView logInEmail = findViewById(R.id.email);
         mEmail.setText(LoginActivity.logInEmail);
+
+        if(!LoginActivity.role.equalsIgnoreCase("Manager")) {
+            MenuItem it = navigationView.getMenu().findItem(R.id.nav_cost);
+            it.setVisible(false);
+        }
         return true;
     }
 
@@ -201,57 +210,57 @@ public class MenuActivity extends AppCompatActivity
     }
 
 
-    class ExecuteTask extends AsyncTask<String, Integer, String> {
+//    class ExecuteTask extends AsyncTask<String, Integer, String> {
+//
+//        @Override
+//        protected String doInBackground(String... params) {
+//            System.out.println("In doInBackground");
+//            try {
+//                PostData(params);
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+////            mprogressBar1.setVisibility(View.GONE);
+//        }
+//
+//    }
 
-        @Override
-        protected String doInBackground(String... params) {
-            System.out.println("In doInBackground");
-            try {
-                PostData(params);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-//            mprogressBar1.setVisibility(View.GONE);
-        }
-
-    }
-
-    public void PostData(String[] values) throws IOException {
-        int status = 0;
-        String output;
-
-        try {
-            System.out.println("In post");
-            // Make call to a particular URL
-            URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            // set request method to POST and send name value pair
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            // write to POST data area
-            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-            out.write(values[0]);
-            out.close();
-
-            // get HTTP response code sent by server
-            status = conn.getResponseCode();
-
-            //close the connection
-            conn.disconnect();
-        } // handle exceptions
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
+//    public void PostData(String[] values) throws IOException {
+//        int status = 0;
+//        String output;
+//
+//        try {
+//            System.out.println("In post");
+//            // Make call to a particular URL
+//            URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/");
+//            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//
+//            // set request method to POST and send name value pair
+//            conn.setRequestMethod("POST");
+//            conn.setDoOutput(true);
+//            // write to POST data area
+//            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+//            out.write(values[0]);
+//            out.close();
+//
+//            // get HTTP response code sent by server
+//            status = conn.getResponseCode();
+//
+//            //close the connection
+//            conn.disconnect();
+//        } // handle exceptions
+//        catch (MalformedURLException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }
 }

@@ -33,7 +33,7 @@
         </activity>
         <activity
             android:name=".MenuActivity"
-            android:label="Track Time"
+            android:label="Home Screen"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity android:name=".NewUserActivity" />
