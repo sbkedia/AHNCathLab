@@ -169,7 +169,7 @@ public class DeviceListAdapter extends BaseAdapter {
 
 		//When moving out
 		if(device.getName().equalsIgnoreCase("0A1122") && out){
-			if(rssi>(-60)){
+			if(rssi>(-60 )){
 				System.out.println("Captured for lab- out" + rssi);
 				labAdapterTime = SystemClock.elapsedRealtime();
 			}

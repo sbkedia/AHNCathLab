@@ -41,7 +41,6 @@ public class CostActivity extends AppCompatActivity implements NavigationView.On
     private Calendar myCalendarStart;
     private Calendar myCalendarEnd;
     private DatePickerDialog.OnDateSetListener dateStart;
-    private DatePickerDialog.OnDateSetListener dateEnd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +117,7 @@ public class CostActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateLabelStart() {
-        String myFormat = "MM/dd/yy";
+        String myFormat = "MM/dd/yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         datePickStart.setText(sdf.format(myCalendarStart.getTime()));

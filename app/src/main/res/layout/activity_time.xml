@@ -74,6 +74,10 @@
                 android:layout_height="wrap_content"
                 android:background="#3d455b">
 
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
                 <RelativeLayout
                     android:id="@+id/RelativeLayout1"
                     android:layout_width="fill_parent"
@@ -87,6 +91,7 @@
                         android:layout_centerHorizontal="true">
                     </TableLayout>
                 </RelativeLayout>
+                </HorizontalScrollView>
             </ScrollView>
         </LinearLayout>
 

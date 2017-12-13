@@ -8,9 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.Manifest;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,12 +23,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -41,14 +47,24 @@ import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -68,6 +84,7 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { SheetsScopes.SPREADSHEETS_READONLY };
     private final Context context = this;
+    private GoogleSheetsActivity googleSheetsActivity;
 
     String ID = "";
     List<String> sheetValues = new ArrayList<>();
@@ -75,6 +92,11 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        googleSheetsActivity = this;
         setContentView(R.layout.activity_google_sheets);
 
         Toolbar toolbar = findViewById(R.id.toolbar3);
@@ -101,116 +123,54 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
         sheetValues = output;
     }
 
-    private void computeCost() {
+    private List<String> computeCost() {
 
         String user = LoginActivity.logInEmail;
 
         String startDate = String.valueOf(CostActivity.datePickStart.getText());
-//        String endDate = String.valueOf(CostActivity.datePickEnd.getText());
 
         HashMap<String, List<Double>> varSalary = new HashMap<>();
         HashMap<String, List<Double>> varSupply = new HashMap<>();
         HashMap<String, List<Double>> fixedSalary = new HashMap<>();
         HashMap<String, List<Double>> rates = new HashMap<>();
 
-//        HashMap<String, List<Double>> netRevEstimate = new HashMap<>();
-//        HashMap<String, List<Double>> varOther = new HashMap<>();
-//        HashMap<String, List<Double>> fixedOther = new HashMap<>();
-//        HashMap<String, List<Double>> allocationsCost = new HashMap<>();
-//        HashMap<String, List<Double>> interestDep = new HashMap<>();
-//        HashMap<String, List<Double>> hospitalOverhead = new HashMap<>();
-//        HashMap<String, List<Double>> fixedIndirectAcademic = new HashMap<>();
-//        HashMap<String, List<Double>> corporateOverhead = new HashMap<>();
-//        HashMap<String, List<Double>> dayTotal = new HashMap<>();
-//        HashMap<String, List<String>> physicianName = new HashMap<>();
-
         for (String row: sheetValues) {
-            String rowData[] = row.split(",");
+            String rowData[] = row.split("#");
+            System.out.println("I'm in here." + startDate + " " + rowData[1]);
             if (rowData[1].equals(startDate)) {
                 if (!varSalary.containsKey(rowData[0])) {    // If selected date in sheet row
-//                    List<Double> listCharges = new ArrayList<>();
-//                    listCharges.add(Double.parseDouble(rowData[4]));
-//                    charges.put(rowData[2], listCharges);
-//
-//                    List<Double> listNet = new ArrayList<>();
-//                    listNet.add(Double.parseDouble(rowData[5]));
-//                    netRevEstimate.put(rowData[2], listNet);
 //
                     List<Double> listVarSalary = new ArrayList<>();
-                    listVarSalary.add(Double.parseDouble(rowData[2]));
+                    listVarSalary.add(Double.parseDouble(rowData[2].replace(",","")));
                     varSalary.put(rowData[0], listVarSalary);
 
                     List<Double> listVarSupply = new ArrayList<>();
-                    listVarSupply.add(Double.parseDouble(rowData[3]));
+                    listVarSupply.add(Double.parseDouble(rowData[3].replace(",","")));
                     varSupply.put(rowData[0], listVarSupply);
 
                     List<Double> listFixedSalary = new ArrayList<>();
-                    listFixedSalary.add(Double.parseDouble(rowData[4]));
+                    listFixedSalary.add(Double.parseDouble(rowData[4].replace(",","")));
                     fixedSalary.put(rowData[0], listFixedSalary);
 
                     List<Double> listRate = new ArrayList<>();
-                    listRate.add(Double.parseDouble(rowData[5]));
+                    listRate.add(Double.parseDouble(rowData[5].replace(",","")));
                     rates.put(rowData[0], listRate);
-
-//                    List<Double> listFixedOther = new ArrayList<>();
-//                    listFixedOther.add(Double.parseDouble(rowData[10]));
-//                    fixedOther.put(rowData[2], listFixedOther);
-//
-//                    List<Double> listAllocationsCost = new ArrayList<>();
-//                    listAllocationsCost.add(Double.parseDouble(rowData[11]));
-//                    allocationsCost.put(rowData[2], listAllocationsCost);
-//
-//                    List<Double> listInterestDep = new ArrayList<>();
-//                    listInterestDep.add(Double.parseDouble(rowData[12]));
-//                    interestDep.put(rowData[2], listInterestDep);
-//
-//                    List<Double> listHospitalOverhead = new ArrayList<>();
-//                    listHospitalOverhead.add(Double.parseDouble(rowData[13]));
-//                    hospitalOverhead.put(rowData[2], listHospitalOverhead);
-//
-//                    List<Double> listFixedIndirectAcad = new ArrayList<>();
-//                    listFixedIndirectAcad.add(Double.parseDouble(rowData[14]));
-//                    fixedIndirectAcademic.put(rowData[2], listFixedIndirectAcad);
-//
-//                    List<Double> listCorporateOverhead = new ArrayList<>();
-//                    listCorporateOverhead.add(Double.parseDouble(rowData[15]));
-//                    corporateOverhead.put(rowData[2], listCorporateOverhead);
-//
-//                    List<String> listNames = new ArrayList<>();
-//                    listNames.add(rowData[0]);
-//                    physicianName.put(rowData[2], listNames);
                 } else {
-//                    charges.get(rowData[2]).add(Double.parseDouble(rowData[4]));
-//                    netRevEstimate.get(rowData[2]).add(Double.parseDouble(rowData[5]));
-                    varSalary.get(rowData[0]).add(Double.parseDouble(rowData[2]));
-                    varSupply.get(rowData[0]).add(Double.parseDouble(rowData[3]));
-                    fixedSalary.get(rowData[0]).add(Double.parseDouble(rowData[4]));
-                    rates.get(rowData[0]).add(Double.parseDouble(rowData[5]));
-//                    fixedOther.get(rowData[2]).add(Double.parseDouble(rowData[10]));
-//                    allocationsCost.get(rowData[2]).add(Double.parseDouble(rowData[11]));
-//                    interestDep.get(rowData[2]).add(Double.parseDouble(rowData[12]));
-//                    hospitalOverhead.get(rowData[2]).add(Double.parseDouble(rowData[13]));
-//                    fixedIndirectAcademic.get(rowData[2]).add(Double.parseDouble(rowData[14]));
-//                    corporateOverhead.get(rowData[2]).add(Double.parseDouble(rowData[15]));
-//                    physicianName.get(rowData[2]).add(rowData[0]);
+                    varSalary.get(rowData[0]).add(Double.parseDouble(rowData[2].replace(",","")));
+                    varSupply.get(rowData[0]).add(Double.parseDouble(rowData[3].replace(",","")));
+                    fixedSalary.get(rowData[0]).add(Double.parseDouble(rowData[4].replace(",","")));
+                    rates.get(rowData[0]).add(Double.parseDouble(rowData[5].replace(",","")));
                 }
             }
         }
 
         double totalVarSalary = 0, totalVarSupply = 0, totalFixedSalary = 0, rate = 0;
-//              totalVarOther = 0, totalCharges = 0, totalRevEstimate = 0, totalFixedOther = 0, totalAllocationsCost = 0, totalInterestDep = 0, totalHospitalOverhead = 0,
-//                totalFixedIndirectAcad = 0, totalCorporateOverhead = 0;
 
         List<String> result = new ArrayList<>();
-        result.add("\n");
-        int count = 1;
+//        result.add("\n");
+        int count = 0;
 
         for (String key: varSalary.keySet()) {
-//            result.add("Date: " + key);
-//            for (Double cost: charges.get(key))
-//                totalCharges += cost;
-//            for (Double cost: netRevEstimate.get(key))
-//                totalRevEstimate += cost;
             for (Double cost: varSalary.get(key)) {
                 totalVarSalary += cost;
                 count++;
@@ -221,38 +181,12 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
                 totalFixedSalary += cost;
             for (Double cost: rates.get(key))
                 rate = cost;
-//            for (Double cost: fixedOther.get(key))
-//                totalFixedOther += cost;
-//            for (Double cost: allocationsCost.get(key))
-//                totalAllocationsCost += cost;
-//            for (Double cost: interestDep.get(key))
-//                totalInterestDep += cost;
-//            for (Double cost: hospitalOverhead.get(key))
-//                totalHospitalOverhead += cost;
-//            for (Double cost: fixedIndirectAcademic.get(key))
-//                totalFixedIndirectAcad += cost;
-//            for (Double cost: corporateOverhead.get(key))
-//                totalCorporateOverhead += cost;
-            result.add("Average variable salary: " + totalVarSalary/count);
-            result.add("Average variable supply: " + totalVarSupply/count);
-            result.add("Average fixed salary: " + totalFixedSalary+"\n");
-            result.add("Rate: " + rate+"\n");
-//            patientTotals.put(key, Arrays.asList(totalIndirect, totalDirect, totalMaterial));
+            result.add(startDate + "," + key + "," + totalVarSalary/count + "," + totalVarSupply/count + "," + totalFixedSalary/count + "," + rate);
+            count = 0;
         }
 
-        System.out.println("Total Variable Salary:");
-        System.out.println(totalVarSalary + "\n");
-
-        System.out.println("Total Variable Supply:");
-        System.out.println(totalVarSupply + "\n");
-
-        System.out.println("Total Fixed Salary:");
-        System.out.println(totalFixedSalary + "\n");
-
-        System.out.println("Final output:");
-        System.out.println(result + "\n");
-
-        mOutputText.setText(TextUtils.join("\n", result));
+//        mOutputText.setText(TextUtils.join("\n", result));
+        return(result);
     }
 
 
@@ -437,6 +371,7 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.sheets.v4.Sheets mService = null;
         private Exception mLastError = null;
+        TableLayout stk = (TableLayout) findViewById(R.id.costTable);
 
         MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
@@ -471,27 +406,192 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
         private List<String> getDataFromApi() throws IOException {
             System.out.println("Here in sheets.");
             String spreadsheetId = ID;
-            String range = "Sheet2!A1:AB";
+            String range = "Sheet2!A1:AC";
             List<String> results = new ArrayList<>();
             ValueRange response = this.mService.spreadsheets().values()
                     .get(spreadsheetId, range)
                     .execute();
             List<List<Object>> values = response.getValues();
+            int i = 0;
             if (values != null) {
-                for (List row : values) {
-                    System.out.println("Row: ");
-                    System.out.println(row.get(0) + "\n");
+                for (List row: values) {
                     // email, start (admission) date, DV Salary, DV Supply, DF Salary, rate
-                    results.add(row.get(7) + "," + row.get(3) + ","
-                            + row.get(15) + "," + row.get(16) + "," + row.get(18) + ","
-                            + row.get(29)); // + "," + row.get(15) + "," + row.get(16) + ","
-//                            + row.get(17) + "," + row.get(18) + "," + row.get(19) + ","
-//                            + row.get(20) + "," + row.get(21) + "," + row.get(22)
-//                            + "," + row.get(23) + "," + row.get(24));
+                    results.add(row.get(7) + "#" + row.get(3) + "#"
+                            + row.get(15) + "#" + row.get(16) + "#" + row.get(18) + "#"
+                            + row.get(28));
                 }
             }
+
             System.out.println("Results" + results);
             return results;
+        }
+
+        //Create table view
+        public void createTimeTable(List<String> output) {
+            List<String> response = new ArrayList<>();
+
+            System.out.println("In create time table");
+            String[] val = new String[6];
+            System.out.println("In create time table222" + output);
+            for (String row : output) {
+                System.out.println("In for loop");
+                val = row.split(",");
+                System.out.println("Values:" + val[0]);
+            }
+            System.out.print("Valuesssss" + val[0]);
+            response = doGet(val[0]);
+
+            TableRow tbrow0 = new TableRow(googleSheetsActivity);
+            TextView tv0 = new TextView(googleSheetsActivity);
+            tv0.setText(" PHYSICIAN ");
+            tv0.setTextColor(Color.GREEN);
+            tv0.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv0);
+            TextView tv1 = new TextView(googleSheetsActivity);
+            tv1.setText(" COST ");
+            tv1.setTextColor(Color.GREEN);
+            tv1.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv1);
+            TextView tv2 = new TextView(googleSheetsActivity);
+            tv2.setText(" AVG VAR SALARY ");
+            tv2.setTextColor(Color.GREEN);
+            tv2.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv2);
+            TextView tv3 = new TextView(googleSheetsActivity);
+            tv3.setText(" AVG VAR SUPPLY ");
+            tv3.setTextColor(Color.GREEN);
+            tv3.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv3);
+            TextView tv4 = new TextView(googleSheetsActivity);
+            tv4.setText(" AVG FIXED SALARY ");
+            tv4.setTextColor(Color.GREEN);
+            tv4.setGravity(Gravity.CENTER);
+            tbrow0.addView(tv4);
+            stk.addView(tbrow0);
+
+            String prevDate = "";
+            String currentDate = "";
+            long totalTime = 0;
+
+            String userId = "";
+
+            String[] costRecords = new String[6];
+            //Display user-wise time
+            for (String row : output) {
+                costRecords = row.split(",");
+                userId = costRecords[1];
+//                System.out.println("Userrrrrr" + userId);
+
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                    Date dateIn = format.parse("00:00:00");
+                    Date dateOut = format.parse("00:00:00");
+
+                    for (int i = 0; i < response.size(); i = i + 4) {
+                        System.out.println("User: " + response);
+                        if (response.get(i).equalsIgnoreCase(userId)) {
+                            System.out.println("User: " + userId);
+
+                            //Calculate total time
+                            if (response.get(i + 3).equalsIgnoreCase("in")) {
+                                dateIn = format.parse(response.get(i + 2));
+                            } else {
+                                dateOut = format.parse(response.get(i + 2));
+                                totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
+                            }
+                        }
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                // Add total row
+                    TableRow tbrow = new TableRow(googleSheetsActivity);
+                    TextView t0v = new TextView(googleSheetsActivity);
+                    t0v.setText(" $" + costRecords[1] + " ");
+                    t0v.setTextColor(Color.WHITE);
+                    t0v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t0v);
+
+                    TextView t1v = new TextView(googleSheetsActivity);
+                    t1v.setText(" " + String.format("$%.2f", ((TimeUnit.MILLISECONDS.toMinutes(totalTime) * Double.parseDouble(costRecords[5]))/60)) + " ");
+                    t1v.setTextColor(Color.WHITE);
+                    t1v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t1v);
+
+                    TextView t2v = new TextView(googleSheetsActivity);
+                    t2v.setText(" $" + costRecords[2] + " ");
+                    t2v.setTextColor(Color.WHITE);
+                    t2v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t2v);
+
+                    TextView t3v = new TextView(googleSheetsActivity);
+                    t3v.setText(" $" + costRecords[3] + " ");
+                    t3v.setTextColor(Color.WHITE);
+                    t3v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t3v);
+
+                    TextView t4v = new TextView(googleSheetsActivity);
+                    t4v.setText(" $" + costRecords[4] + " ");
+                    t4v.setTextColor(Color.WHITE);
+                    t4v.setGravity(Gravity.CENTER);
+                    tbrow.addView(t4v);
+
+                    stk.addView(tbrow);
+            }
+        }
+
+        public List<String> doGet(String dateStart) {
+            // Make an HTTP GET passing the name on the URL line
+            List<String> response = new ArrayList<>();
+            HttpURLConnection conn;
+            int status = 0;
+
+            try {
+
+                SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+                Date date1 = formatter.parse(dateStart);
+                Calendar c = Calendar.getInstance();
+                c.setTime(date1);
+                c.add(Calendar.DATE, 1);
+                String dateEnd = formatter.format(c.getTime());
+
+                URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchManager" +","+dateStart+","+dateEnd+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+
+                // wait for response
+                status = conn.getResponseCode();
+
+                System.out.println(status);
+                // If things went poorly, don't try to read any response, just return.
+                if (status != 200) {
+                    // not using msg
+                    String msg = conn.getResponseMessage();
+                    response.add(msg);
+                    return response;
+                }
+                String output = "";
+                // things went well so let's read the response
+                BufferedReader br = new BufferedReader(new InputStreamReader(
+                        (conn.getInputStream())));
+
+                while ((output = br.readLine()) != null) {
+                    System.out.println(output);
+                    response.addAll(Arrays.asList(output.split(",")));
+                }
+                System.out.println(response);
+                conn.disconnect();
+
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return response;
         }
 
         @Override
@@ -505,7 +605,8 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
                 mOutputText.setText("No results returned.");
             } else {
                 getValues(output);
-                computeCost();
+                output = computeCost();
+                createTimeTable(output);
             }
         }
 
