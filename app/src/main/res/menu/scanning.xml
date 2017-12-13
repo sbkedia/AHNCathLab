@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/scanning_start" android:title="Scan" android:orderInCategory="3" app:showAsAction="always|withText"></item>
+    <item android:id="@+id/scanning_stop" android:title="Stop" android:orderInCategory="4" app:showAsAction="always|withText"></item>
+    <item android:id="@+id/scanning_indicator" android:orderInCategory="2" app:showAsAction="ifRoom"></item>
+</menu>

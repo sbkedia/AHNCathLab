@@ -35,22 +35,61 @@
             </android.support.design.widget.AppBarLayout>
 
             <EditText
-                android:id="@+id/pickDate"
+                android:id="@+id/pickDateStart"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select Date"
+                android:hint="Select Start Date"
                 android:imeOptions="actionUnspecified"
                 android:inputType="date"
                 android:maxLines="1"
                 android:clickable="true"
                 android:singleLine="true" />
 
+            <EditText
+                android:id="@+id/pickDateEnd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select End Date"
+                android:imeOptions="actionUnspecified"
+                android:inputType="date"
+                android:maxLines="1"
+                android:clickable="true"
+                android:singleLine="true" />
+
+            <Button
+                android:id="@+id/showTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Display Time" />
+
+
             <TextView
                 android:id="@+id/timeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <ScrollView
+                android:id="@+id/scrollView1"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#3d455b">
+
+                <RelativeLayout
+                    android:id="@+id/RelativeLayout1"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TableLayout
+                        android:id="@+id/timeTable"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true">
+                    </TableLayout>
+                </RelativeLayout>
+            </ScrollView>
         </LinearLayout>
+
 
     </android.support.constraint.ConstraintLayout>
 
