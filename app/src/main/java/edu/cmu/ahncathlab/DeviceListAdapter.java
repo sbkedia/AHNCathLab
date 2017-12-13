@@ -141,14 +141,14 @@ public class DeviceListAdapter extends BaseAdapter {
 		String todayTime = timeFormat.format(date);
 
 		//When moving into the lab
-		if(device.getName().equalsIgnoreCase("0A0C21") && in){
-			if(rssi>(-55)){
+		if(device.getName().equalsIgnoreCase("0A0920") && in){
+			if(rssi>(-60)){
 				System.out.println("Captured rssi" + rssi);
 				doorAdapterTime = SystemClock.elapsedRealtime();
 			}
 		}
 
-		if(device.getName().equalsIgnoreCase("100511") && in){
+		if(device.getName().equalsIgnoreCase("0A1122") && in){
 			//Check if time passed is within 15 seconds
 			long intervalTime = SystemClock.elapsedRealtime() - doorAdapterTime;
 			if(rssi>(-60) && intervalTime<15000){
@@ -168,14 +168,14 @@ public class DeviceListAdapter extends BaseAdapter {
 		}
 
 		//When moving out
-		if(device.getName().equalsIgnoreCase("100511") && out){
-			if(rssi>(-55)){
+		if(device.getName().equalsIgnoreCase("0A1122") && out){
+			if(rssi>(-60)){
 				System.out.println("Captured for lab- out" + rssi);
 				labAdapterTime = SystemClock.elapsedRealtime();
 			}
 		}
 
-		if(device.getName().equalsIgnoreCase("0A0C21") && out){
+		if(device.getName().equalsIgnoreCase("0A0920") && out){
 			//Check if time passed is within 15 seconds
 			long intervalTime = SystemClock.elapsedRealtime() - labAdapterTime;
 			if(rssi>(-60) && intervalTime<15000){

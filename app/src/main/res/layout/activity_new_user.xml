@@ -124,17 +124,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dip"
                 android:text="@string/already_account_present"
-                android:textStyle="bold" />
+                android:textStyle="bold" /><![CDATA[
 
-            <ProgressBar
-                android:id="@+id/rProgressBar1"
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/button1"
-                android:layout_below="@+id/editText2"
-                android:layout_marginTop="87dp" />  
+              
 
+        ]]>
         </LinearLayout>
 
     </ScrollView>

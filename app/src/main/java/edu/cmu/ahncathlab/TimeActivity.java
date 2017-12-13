@@ -99,7 +99,6 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
                 myCalendarStart.set(Calendar.MONTH, monthOfYear);
                 myCalendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateLabelStart();
-                mDisplayTime.execute((Void) null);
             }
 
         };
@@ -119,12 +118,11 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear,
                                   int dayOfMonth) {
-                mDisplayTime = new DisplayTime();
+
                 myCalendarEnd.set(Calendar.YEAR, year);
                 myCalendarEnd.set(Calendar.MONTH, monthOfYear);
                 myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
                 updateLabelEnd();
-                mDisplayTime.execute((Void) null);
             }
 
         };
@@ -135,6 +133,15 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
                 new DatePickerDialog(context, dateEnd, myCalendarEnd
                         .get(Calendar.YEAR), myCalendarEnd.get(Calendar.MONTH),
                         myCalendarEnd.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+        Button mShowCost = (Button) findViewById(R.id.showTime);
+        mShowCost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDisplayTime = new DisplayTime();
+                mDisplayTime.execute((Void) null);
             }
         });
 
@@ -176,6 +183,11 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
         TextView mEmail = (TextView)header.findViewById(R.id.emailID);
         TextView logInEmail = findViewById(R.id.email);
         mEmail.setText(LoginActivity.logInEmail);
+
+        if(!LoginActivity.role.equalsIgnoreCase("Manager")) {
+            MenuItem it = navigationView.getMenu().findItem(R.id.nav_cost);
+            it.setVisible(false);
+        }
         return true;
     }
 
@@ -282,7 +294,7 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
                 tbrow0.addView(tv1);
                 TextView tv2 = new TextView(timeActivity);
                 tv2.setText(" MOVEMENT ");
-                tv2.setTextColor(Color.WHITE);
+                tv2.setTextColor(Color.GREEN);
                 tv2.setGravity(Gravity.CENTER);
                 tbrow0.addView(tv2);
                 stk.addView(tbrow0);
@@ -375,7 +387,124 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
             // Display time for manager
             else {
+                TableRow tbrow0 = new TableRow(timeActivity);
+                TextView tv0 = new TextView(timeActivity);
+                tv0.setText(" PHYSICIAN ");
+                tv0.setTextColor(Color.GREEN);
+                tv0.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv0);
 
+                TextView tv1 = new TextView(timeActivity);
+                tv1.setText(" DATE ");
+                tv1.setTextColor(Color.GREEN);
+                tv1.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv1);
+
+                TextView tv2 = new TextView(timeActivity);
+                tv2.setText(" TIME ");
+                tv2.setTextColor(Color.GREEN);
+                tv2.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv2);
+
+                TextView tv3 = new TextView(timeActivity);
+                tv3.setText(" MOVEMENT ");
+                tv3.setTextColor(Color.GREEN);
+                tv3.setGravity(Gravity.CENTER);
+                tbrow0.addView(tv3);
+                stk.addView(tbrow0);
+
+                String prevDate = "";
+                String currentDate = "";
+                long totalTime = 0;
+                try {
+                    SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                    Date dateIn = format.parse("00:00:00");
+                    Date dateOut = format.parse("00:00:00");
+
+
+                    for (int i = 0; i < output.size(); i = i + 4) {
+                        currentDate = output.get(i);
+
+                        //Calculate total time
+                        if (output.get(i + 3).equalsIgnoreCase("in")) {
+                            dateIn = format.parse(output.get(i + 2));
+                        } else {
+                            dateOut = format.parse(output.get(i + 2));
+                            totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
+                        }
+
+                        // Add total row
+                        if(!currentDate.equalsIgnoreCase(prevDate) && !prevDate.equalsIgnoreCase("")){
+                            TableRow tbrow = new TableRow(timeActivity);
+                            TextView t1v = new TextView(timeActivity);
+                            t1v.setText(" " + "Total Time" + " ");
+                            t1v.setTextColor(Color.CYAN);
+                            t1v.setGravity(Gravity.CENTER);
+                            tbrow.addView(t1v);
+                            TextView t2v = new TextView(timeActivity);
+                            t2v.setText(" " + totalTime + " ");
+                            t2v.setTextColor(Color.CYAN);
+                            t2v.setGravity(Gravity.CENTER);
+                            tbrow.addView(t2v);
+                            stk.addView(tbrow);
+
+                            //Add blank row after total
+                            stk.addView(new TableRow(timeActivity));
+                        }
+
+
+                        TableRow tbrow = new TableRow(timeActivity);
+                        TextView t0v = new TextView(timeActivity);
+                        t0v.setText(" " + output.get(i) + " ");
+                        t0v.setTextColor(Color.WHITE);
+                        t0v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t0v);
+
+                        TextView t1v = new TextView(timeActivity);
+                        t1v.setText(" " + output.get(i+1) + " ");
+                        t1v.setTextColor(Color.WHITE);
+                        t1v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t1v);
+
+                        TextView t2v = new TextView(timeActivity);
+                        t2v.setText(" " + output.get(i+2) + " ");
+                        t2v.setTextColor(Color.WHITE);
+                        t2v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t2v);
+
+                        TextView t3v = new TextView(timeActivity);
+                        t3v.setText(" " + output.get(i+3) + " ");
+                        t3v.setTextColor(Color.WHITE);
+                        t3v.setGravity(Gravity.CENTER);
+                        tbrow.addView(t3v);
+                        stk.addView(tbrow);
+                    }
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //Add final total time
+                String tTime = String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(totalTime),
+                        TimeUnit.MILLISECONDS.toSeconds(totalTime) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(totalTime))
+                );
+                TableRow tbrow = new TableRow(timeActivity);
+                TextView t1v = new TextView(timeActivity);
+                t1v.setText(" " + "Total Time" + " ");
+                t1v.setTextColor(Color.CYAN);
+                t1v.setGravity(Gravity.CENTER);
+                tbrow.addView(t1v);
+                TextView t2v = new TextView(timeActivity);
+                t2v.setText(" " + tTime + " ");
+                t2v.setTextColor(Color.CYAN);
+                t2v.setGravity(Gravity.CENTER);
+                tbrow.addView(t2v);
+                stk.addView(tbrow);
+
+                //Add blank row after total
+                stk.addView(new TableRow(timeActivity));
             }
 
         }
@@ -388,11 +517,13 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
             try {
 
-                if(LoginActivity.role.toLowerCase().equals("physician")) {
+                if(LoginActivity.role.equalsIgnoreCase("physician")) {
 
                     System.out.println(datePickStart.getText().toString());
+                    System.out.println(datePickEnd.getText().toString());
+
                     // pass the userid,password
-                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchUser" +","+ LoginActivity.logInEmail +","+datePickStart.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchUser" +","+ LoginActivity.logInEmail +","+datePickStart.getText().toString()+ ","+datePickEnd.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
 
@@ -422,7 +553,7 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
                 else {
 
-                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchManager" +","+ LoginActivity.logInEmail +","+datePickStart.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
+                    URL url = new URL("https://ahncathlabserver.herokuapp.com/MongoDBAdd/?csvString=" + "FetchManager" +","+datePickStart.getText().toString()+","+datePickEnd.getText().toString()+","+ LoginActivity.logInEmail +","+ Build.MODEL +","+ Build.MANUFACTURER +","+ Build.VERSION.RELEASE);
                     conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("GET");
 

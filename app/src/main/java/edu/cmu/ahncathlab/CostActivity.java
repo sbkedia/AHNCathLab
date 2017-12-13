@@ -159,6 +159,11 @@ public class CostActivity extends AppCompatActivity implements NavigationView.On
         TextView mEmail = (TextView)header.findViewById(R.id.emailID);
         TextView logInEmail = findViewById(R.id.email);
         mEmail.setText(LoginActivity.logInEmail);
+
+        if(!LoginActivity.role.equalsIgnoreCase("Manager")) {
+            MenuItem it = navigationView.getMenu().findItem(R.id.nav_cost);
+            it.setVisible(false);
+        }
         return true;
     }
 

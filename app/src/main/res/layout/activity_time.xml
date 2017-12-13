@@ -56,6 +56,13 @@
                 android:clickable="true"
                 android:singleLine="true" />
 
+            <Button
+                android:id="@+id/showTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Display Time" />
+
+
             <TextView
                 android:id="@+id/timeView"
                 android:layout_width="match_parent"

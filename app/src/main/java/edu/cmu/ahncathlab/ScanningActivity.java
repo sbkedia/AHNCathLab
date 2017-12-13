@@ -199,8 +199,8 @@ public class ScanningActivity extends ListActivity {
             final byte[] scanRecord)
 	{
 	    //Specific address of the required beacons
-        if(device.getAddress().equalsIgnoreCase("00:AA:55:A4:A8:4C") || device.getAddress().equalsIgnoreCase("00:AA:55:89:04:45"))
-//	    if(device.getAddress().equalsIgnoreCase("00:AA:55:A4:A8:09") || device.getAddress().equalsIgnoreCase("00:AA:55:A4:A8:91"))
+//        if(device.getAddress().equalsIgnoreCase("00:AA:55:A4:A8:4C") || device.getAddress().equalsIgnoreCase("00:AA:55:89:04:45"))
+	    if(device.getAddress().equalsIgnoreCase("00:AA:55:A4:A8:09") || device.getAddress().equalsIgnoreCase("00:AA:55:A4:A8:91"))
 		// adding to the UI have to happen in UI thread
 		runOnUiThread(new Runnable() {
 			@Override
