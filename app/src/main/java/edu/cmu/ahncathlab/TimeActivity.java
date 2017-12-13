@@ -264,16 +264,6 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
                 mOutputText.setText("No results returned.");
             } else {
                 createTimeTable(output);
-//                int count = 0;
-//                for(String dis : output){
-//                    count++;
-//                    mOutputText.append(dis +"\t");
-//                    if(count%3==0){
-//                        mOutputText.append("\n");
-//                    }
-//                }
-//                mOutputText.setText(TextUtils.join("\n", output));
-//                mOutputText.setText(TextUtils.join(" ", output));
             }
         }
 

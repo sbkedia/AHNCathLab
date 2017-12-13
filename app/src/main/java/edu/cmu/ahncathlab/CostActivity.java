@@ -85,27 +85,27 @@ public class CostActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        dateEnd = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-                myCalendarEnd.set(Calendar.YEAR, year);
-                myCalendarEnd.set(Calendar.MONTH, monthOfYear);
-                myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                updateLabelEnd();
-            }
-
-        };
-        datePickEnd.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                new DatePickerDialog(context, dateEnd, myCalendarEnd
-                        .get(Calendar.YEAR), myCalendarEnd.get(Calendar.MONTH),
-                        myCalendarEnd.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
+//        dateEnd = new DatePickerDialog.OnDateSetListener() {
+//
+//            @Override
+//            public void onDateSet(DatePicker view, int year, int monthOfYear,
+//                                  int dayOfMonth) {
+//                myCalendarEnd.set(Calendar.YEAR, year);
+//                myCalendarEnd.set(Calendar.MONTH, monthOfYear);
+//                myCalendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+//                updateLabelEnd();
+//            }
+//
+//        };
+//        datePickEnd.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                new DatePickerDialog(context, dateEnd, myCalendarEnd
+//                        .get(Calendar.YEAR), myCalendarEnd.get(Calendar.MONTH),
+//                        myCalendarEnd.get(Calendar.DAY_OF_MONTH)).show();
+//            }
+//        });
 
         Button mShowCost = (Button) findViewById(R.id.showCost);
         mShowCost.setOnClickListener(new View.OnClickListener() {
@@ -124,12 +124,12 @@ public class CostActivity extends AppCompatActivity implements NavigationView.On
         datePickStart.setText(sdf.format(myCalendarStart.getTime()));
     }
 
-    private void updateLabelEnd() {
-        String myFormat = "MM/dd/yy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-
-        datePickEnd.setText(sdf.format(myCalendarEnd.getTime()));
-    }
+//    private void updateLabelEnd() {
+//        String myFormat = "MM/dd/yy";
+//        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+//
+//        datePickEnd.setText(sdf.format(myCalendarEnd.getTime()));
+//    }
 
     private void callDriveAPI() {
         final Context context = this;

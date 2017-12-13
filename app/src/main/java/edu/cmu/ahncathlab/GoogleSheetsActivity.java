@@ -103,139 +103,154 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
 
     private void computeCost() {
 
-        String startDate = String.valueOf(CostActivity.datePickStart.getText());
-        String endDate = String.valueOf(CostActivity.datePickEnd.getText());
+        String user = LoginActivity.logInEmail;
 
-        HashMap<String, List<Double>> charges = new HashMap<>();
-        HashMap<String, List<Double>> netRevEstimate = new HashMap<>();
+        String startDate = String.valueOf(CostActivity.datePickStart.getText());
+//        String endDate = String.valueOf(CostActivity.datePickEnd.getText());
+
         HashMap<String, List<Double>> varSalary = new HashMap<>();
         HashMap<String, List<Double>> varSupply = new HashMap<>();
-        HashMap<String, List<Double>> varOther = new HashMap<>();
         HashMap<String, List<Double>> fixedSalary = new HashMap<>();
-        HashMap<String, List<Double>> fixedOther = new HashMap<>();
-        HashMap<String, List<Double>> allocationsCost = new HashMap<>();
-        HashMap<String, List<Double>> interestDep = new HashMap<>();
-        HashMap<String, List<Double>> hospitalOverhead = new HashMap<>();
-        HashMap<String, List<Double>> fixedIndirectAcademic = new HashMap<>();
-        HashMap<String, List<Double>> corporateOverhead = new HashMap<>();
-        HashMap<String, List<Double>> dayTotal = new HashMap<>();
-        HashMap<String, List<String>> physicianName = new HashMap<>();
+        HashMap<String, List<Double>> rates = new HashMap<>();
 
-        double totalCharges = 0, totalRevEstimate = 0, totalVarSalary = 0, totalVarSupply = 0, totalVarOther = 0,
-                totalFixedSalary = 0, totalFixedOther = 0, totalAllocationsCost = 0, totalInterestDep = 0, totalHospitalOverhead = 0,
-                totalFixedIndirectAcad = 0, totalCorporateOverhead = 0;
+//        HashMap<String, List<Double>> netRevEstimate = new HashMap<>();
+//        HashMap<String, List<Double>> varOther = new HashMap<>();
+//        HashMap<String, List<Double>> fixedOther = new HashMap<>();
+//        HashMap<String, List<Double>> allocationsCost = new HashMap<>();
+//        HashMap<String, List<Double>> interestDep = new HashMap<>();
+//        HashMap<String, List<Double>> hospitalOverhead = new HashMap<>();
+//        HashMap<String, List<Double>> fixedIndirectAcademic = new HashMap<>();
+//        HashMap<String, List<Double>> corporateOverhead = new HashMap<>();
+//        HashMap<String, List<Double>> dayTotal = new HashMap<>();
+//        HashMap<String, List<String>> physicianName = new HashMap<>();
 
         for (String row: sheetValues) {
-            if (row.contains("01/01/16")) {
-                String rowData[] = row.split(",");
-                if (!charges.containsKey(rowData[2])) {    // If selected date in sheet row
-                    List<Double> listCharges = new ArrayList<>();
-                    listCharges.add(Double.parseDouble(rowData[4]));
-                    charges.put(rowData[2], listCharges);
-
-                    List<Double> listNet = new ArrayList<>();
-                    listNet.add(Double.parseDouble(rowData[5]));
-                    netRevEstimate.put(rowData[2], listNet);
-
+            String rowData[] = row.split(",");
+            if (rowData[1].equals(startDate)) {
+                if (!varSalary.containsKey(rowData[0])) {    // If selected date in sheet row
+//                    List<Double> listCharges = new ArrayList<>();
+//                    listCharges.add(Double.parseDouble(rowData[4]));
+//                    charges.put(rowData[2], listCharges);
+//
+//                    List<Double> listNet = new ArrayList<>();
+//                    listNet.add(Double.parseDouble(rowData[5]));
+//                    netRevEstimate.put(rowData[2], listNet);
+//
                     List<Double> listVarSalary = new ArrayList<>();
-                    listVarSalary.add(Double.parseDouble(rowData[6]));
-                    varSalary.put(rowData[2], listVarSalary);
+                    listVarSalary.add(Double.parseDouble(rowData[2]));
+                    varSalary.put(rowData[0], listVarSalary);
 
                     List<Double> listVarSupply = new ArrayList<>();
-                    listVarSupply.add(Double.parseDouble(rowData[7]));
-                    varSupply.put(rowData[2], listVarSupply);
-
-                    List<Double> listOther = new ArrayList<>();
-                    listOther.add(Double.parseDouble(rowData[8]));
-                    varOther.put(rowData[2], listOther);
+                    listVarSupply.add(Double.parseDouble(rowData[3]));
+                    varSupply.put(rowData[0], listVarSupply);
 
                     List<Double> listFixedSalary = new ArrayList<>();
-                    listFixedSalary.add(Double.parseDouble(rowData[9]));
-                    fixedSalary.put(rowData[2], listFixedSalary);
+                    listFixedSalary.add(Double.parseDouble(rowData[4]));
+                    fixedSalary.put(rowData[0], listFixedSalary);
 
-                    List<Double> listFixedOther = new ArrayList<>();
-                    listFixedOther.add(Double.parseDouble(rowData[10]));
-                    fixedOther.put(rowData[2], listFixedOther);
+                    List<Double> listRate = new ArrayList<>();
+                    listRate.add(Double.parseDouble(rowData[5]));
+                    rates.put(rowData[0], listRate);
 
-                    List<Double> listAllocationsCost = new ArrayList<>();
-                    listAllocationsCost.add(Double.parseDouble(rowData[11]));
-                    allocationsCost.put(rowData[2], listAllocationsCost);
-
-                    List<Double> listInterestDep = new ArrayList<>();
-                    listInterestDep.add(Double.parseDouble(rowData[12]));
-                    interestDep.put(rowData[2], listInterestDep);
-
-                    List<Double> listHospitalOverhead = new ArrayList<>();
-                    listHospitalOverhead.add(Double.parseDouble(rowData[13]));
-                    hospitalOverhead.put(rowData[2], listHospitalOverhead);
-
-                    List<Double> listFixedIndirectAcad = new ArrayList<>();
-                    listFixedIndirectAcad.add(Double.parseDouble(rowData[14]));
-                    fixedIndirectAcademic.put(rowData[2], listFixedIndirectAcad);
-
-                    List<Double> listCorporateOverhead = new ArrayList<>();
-                    listCorporateOverhead.add(Double.parseDouble(rowData[15]));
-                    corporateOverhead.put(rowData[2], listCorporateOverhead);
-
-                    List<String> listNames = new ArrayList<>();
-                    listNames.add(rowData[0]);
-                    physicianName.put(rowData[2], listNames);
-                }
-                else {
-                    charges.get(rowData[2]).add(Double.parseDouble(rowData[4]));
-                    netRevEstimate.get(rowData[2]).add(Double.parseDouble(rowData[5]));
-                    varSalary.get(rowData[2]).add(Double.parseDouble(rowData[6]));
-                    varSupply.get(rowData[2]).add(Double.parseDouble(rowData[7]));
-                    varOther.get(rowData[2]).add(Double.parseDouble(rowData[8]));
-                    fixedSalary.get(rowData[2]).add(Double.parseDouble(rowData[9]));
-                    fixedOther.get(rowData[2]).add(Double.parseDouble(rowData[10]));
-                    allocationsCost.get(rowData[2]).add(Double.parseDouble(rowData[11]));
-                    interestDep.get(rowData[2]).add(Double.parseDouble(rowData[12]));
-                    hospitalOverhead.get(rowData[2]).add(Double.parseDouble(rowData[13]));
-                    fixedIndirectAcademic.get(rowData[2]).add(Double.parseDouble(rowData[14]));
-                    corporateOverhead.get(rowData[2]).add(Double.parseDouble(rowData[15]));
-                    physicianName.get(rowData[2]).add(rowData[0]);
+//                    List<Double> listFixedOther = new ArrayList<>();
+//                    listFixedOther.add(Double.parseDouble(rowData[10]));
+//                    fixedOther.put(rowData[2], listFixedOther);
+//
+//                    List<Double> listAllocationsCost = new ArrayList<>();
+//                    listAllocationsCost.add(Double.parseDouble(rowData[11]));
+//                    allocationsCost.put(rowData[2], listAllocationsCost);
+//
+//                    List<Double> listInterestDep = new ArrayList<>();
+//                    listInterestDep.add(Double.parseDouble(rowData[12]));
+//                    interestDep.put(rowData[2], listInterestDep);
+//
+//                    List<Double> listHospitalOverhead = new ArrayList<>();
+//                    listHospitalOverhead.add(Double.parseDouble(rowData[13]));
+//                    hospitalOverhead.put(rowData[2], listHospitalOverhead);
+//
+//                    List<Double> listFixedIndirectAcad = new ArrayList<>();
+//                    listFixedIndirectAcad.add(Double.parseDouble(rowData[14]));
+//                    fixedIndirectAcademic.put(rowData[2], listFixedIndirectAcad);
+//
+//                    List<Double> listCorporateOverhead = new ArrayList<>();
+//                    listCorporateOverhead.add(Double.parseDouble(rowData[15]));
+//                    corporateOverhead.put(rowData[2], listCorporateOverhead);
+//
+//                    List<String> listNames = new ArrayList<>();
+//                    listNames.add(rowData[0]);
+//                    physicianName.put(rowData[2], listNames);
+                } else {
+//                    charges.get(rowData[2]).add(Double.parseDouble(rowData[4]));
+//                    netRevEstimate.get(rowData[2]).add(Double.parseDouble(rowData[5]));
+                    varSalary.get(rowData[0]).add(Double.parseDouble(rowData[2]));
+                    varSupply.get(rowData[0]).add(Double.parseDouble(rowData[3]));
+                    fixedSalary.get(rowData[0]).add(Double.parseDouble(rowData[4]));
+                    rates.get(rowData[0]).add(Double.parseDouble(rowData[5]));
+//                    fixedOther.get(rowData[2]).add(Double.parseDouble(rowData[10]));
+//                    allocationsCost.get(rowData[2]).add(Double.parseDouble(rowData[11]));
+//                    interestDep.get(rowData[2]).add(Double.parseDouble(rowData[12]));
+//                    hospitalOverhead.get(rowData[2]).add(Double.parseDouble(rowData[13]));
+//                    fixedIndirectAcademic.get(rowData[2]).add(Double.parseDouble(rowData[14]));
+//                    corporateOverhead.get(rowData[2]).add(Double.parseDouble(rowData[15]));
+//                    physicianName.get(rowData[2]).add(rowData[0]);
                 }
             }
         }
 
+        double totalVarSalary = 0, totalVarSupply = 0, totalFixedSalary = 0, rate = 0;
+//              totalVarOther = 0, totalCharges = 0, totalRevEstimate = 0, totalFixedOther = 0, totalAllocationsCost = 0, totalInterestDep = 0, totalHospitalOverhead = 0,
+//                totalFixedIndirectAcad = 0, totalCorporateOverhead = 0;
+
         List<String> result = new ArrayList<>();
         result.add("\n");
+        int count = 1;
 
-        for (String key: charges.keySet()) {
-            result.add("Date: " + key);
-            for (Double cost: charges.get(key))
-                totalCharges += cost;
-            for (Double cost: netRevEstimate.get(key))
-                totalRevEstimate += cost;
-            for (Double cost: varSalary.get(key))
+        for (String key: varSalary.keySet()) {
+//            result.add("Date: " + key);
+//            for (Double cost: charges.get(key))
+//                totalCharges += cost;
+//            for (Double cost: netRevEstimate.get(key))
+//                totalRevEstimate += cost;
+            for (Double cost: varSalary.get(key)) {
                 totalVarSalary += cost;
+                count++;
+            }
             for (Double cost: varSupply.get(key))
                 totalVarSupply += cost;
-            for (Double cost: varOther.get(key))
-                totalVarOther += cost;
             for (Double cost: fixedSalary.get(key))
                 totalFixedSalary += cost;
-            for (Double cost: fixedOther.get(key))
-                totalFixedOther += cost;
-            for (Double cost: allocationsCost.get(key))
-                totalAllocationsCost += cost;
-            for (Double cost: interestDep.get(key))
-                totalInterestDep += cost;
-            for (Double cost: hospitalOverhead.get(key))
-                totalHospitalOverhead += cost;
-            for (Double cost: fixedIndirectAcademic.get(key))
-                totalFixedIndirectAcad += cost;
-            for (Double cost: corporateOverhead.get(key))
-                totalCorporateOverhead += cost;
-            result.add("Total charges: " + totalCharges);
-            result.add("Total net revenue estimate: " + totalRevEstimate);
-            result.add("Total variable salary: " + totalVarSalary+"\n");
+            for (Double cost: rates.get(key))
+                rate = cost;
+//            for (Double cost: fixedOther.get(key))
+//                totalFixedOther += cost;
+//            for (Double cost: allocationsCost.get(key))
+//                totalAllocationsCost += cost;
+//            for (Double cost: interestDep.get(key))
+//                totalInterestDep += cost;
+//            for (Double cost: hospitalOverhead.get(key))
+//                totalHospitalOverhead += cost;
+//            for (Double cost: fixedIndirectAcademic.get(key))
+//                totalFixedIndirectAcad += cost;
+//            for (Double cost: corporateOverhead.get(key))
+//                totalCorporateOverhead += cost;
+            result.add("Average variable salary: " + totalVarSalary/count);
+            result.add("Average variable supply: " + totalVarSupply/count);
+            result.add("Average fixed salary: " + totalFixedSalary+"\n");
+            result.add("Rate: " + rate+"\n");
 //            patientTotals.put(key, Arrays.asList(totalIndirect, totalDirect, totalMaterial));
         }
 
-        System.out.println("Total charges:");
-        System.out.println(totalCharges + "\n");
+        System.out.println("Total Variable Salary:");
+        System.out.println(totalVarSalary + "\n");
+
+        System.out.println("Total Variable Supply:");
+        System.out.println(totalVarSupply + "\n");
+
+        System.out.println("Total Fixed Salary:");
+        System.out.println(totalFixedSalary + "\n");
+
+        System.out.println("Final output:");
+        System.out.println(result + "\n");
 
         mOutputText.setText(TextUtils.join("\n", result));
     }
@@ -454,23 +469,28 @@ public class GoogleSheetsActivity extends AppCompatActivity implements Navigatio
          * @throws IOException
          */
         private List<String> getDataFromApi() throws IOException {
+            System.out.println("Here in sheets.");
             String spreadsheetId = ID;
-            String range = "Sheet1!A1:AB";
-            List<String> results = new ArrayList<String>();
+            String range = "Sheet2!A1:AB";
+            List<String> results = new ArrayList<>();
             ValueRange response = this.mService.spreadsheets().values()
                     .get(spreadsheetId, range)
                     .execute();
             List<List<Object>> values = response.getValues();
             if (values != null) {
                 for (List row : values) {
-                    results.add(row.get(7) + "," + row.get(1) + ","
-                            + row.get(26) + "," + row.get(9) + "," + row.get(13) + ","
-                            + row.get(14) + "," + row.get(15) + "," + row.get(16) + ","
-                            + row.get(17) + "," + row.get(18) + "," + row.get(19) + ","
-                            + row.get(20) + "," + row.get(21) + "," + row.get(22)
-                            + "," + row.get(23) + "," + row.get(24));
+                    System.out.println("Row: ");
+                    System.out.println(row.get(0) + "\n");
+                    // email, start (admission) date, DV Salary, DV Supply, DF Salary, rate
+                    results.add(row.get(7) + "," + row.get(3) + ","
+                            + row.get(15) + "," + row.get(16) + "," + row.get(18) + ","
+                            + row.get(29)); // + "," + row.get(15) + "," + row.get(16) + ","
+//                            + row.get(17) + "," + row.get(18) + "," + row.get(19) + ","
+//                            + row.get(20) + "," + row.get(21) + "," + row.get(22)
+//                            + "," + row.get(23) + "," + row.get(24));
                 }
             }
+            System.out.println("Results" + results);
             return results;
         }
 
