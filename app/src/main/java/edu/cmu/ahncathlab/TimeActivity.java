@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -406,68 +408,84 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
                 String prevDate = "";
                 String currentDate = "";
                 long totalTime = 0;
+
+                //Store each user ID
+                HashSet<String> userIds=new HashSet<String>();
+                for(int k = 0; k<output.size(); k = k +4){
+                    userIds.add(output.get(k));
+                }
+                Iterator<String> itr=userIds.iterator();
+                String userId;
+
+                //Display user-wise time
+                while(itr.hasNext()){
+                userId= itr.next();
+                System.out.println("Userrrrrr" + userId);
+
                 try {
                     SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
                     Date dateIn = format.parse("00:00:00");
                     Date dateOut = format.parse("00:00:00");
 
-
                     for (int i = 0; i < output.size(); i = i + 4) {
-                        currentDate = output.get(i);
 
-                        //Calculate total time
-                        if (output.get(i + 3).equalsIgnoreCase("in")) {
-                            dateIn = format.parse(output.get(i + 2));
-                        } else {
-                            dateOut = format.parse(output.get(i + 2));
-                            totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
-                        }
+                        if (output.get(i).equalsIgnoreCase(userId)) {
+                            currentDate = output.get(i);
 
-                        // Add total row
-                        if(!currentDate.equalsIgnoreCase(prevDate) && !prevDate.equalsIgnoreCase("")){
+                            //Calculate total time
+                            if (output.get(i + 3).equalsIgnoreCase("in")) {
+                                dateIn = format.parse(output.get(i + 2));
+                            } else {
+                                dateOut = format.parse(output.get(i + 2));
+                                totalTime = totalTime + (dateOut.getTime() - dateIn.getTime());
+                            }
+
+                            // Add total row
+                            if (!currentDate.equalsIgnoreCase(prevDate) && !prevDate.equalsIgnoreCase("")) {
+                                TableRow tbrow = new TableRow(timeActivity);
+                                TextView t1v = new TextView(timeActivity);
+                                t1v.setText(" " + "Total Time" + " ");
+                                t1v.setTextColor(Color.CYAN);
+                                t1v.setGravity(Gravity.CENTER);
+                                tbrow.addView(t1v);
+                                TextView t2v = new TextView(timeActivity);
+                                t2v.setText(" " + totalTime + " ");
+                                t2v.setTextColor(Color.CYAN);
+                                t2v.setGravity(Gravity.CENTER);
+                                tbrow.addView(t2v);
+                                stk.addView(tbrow);
+
+                                //Add blank row after total
+                                stk.addView(new TableRow(timeActivity));
+                            }
+
+
                             TableRow tbrow = new TableRow(timeActivity);
+                            TextView t0v = new TextView(timeActivity);
+                            t0v.setText(" " + output.get(i) + " ");
+                            t0v.setTextColor(Color.WHITE);
+                            t0v.setGravity(Gravity.CENTER);
+                            tbrow.addView(t0v);
+
                             TextView t1v = new TextView(timeActivity);
-                            t1v.setText(" " + "Total Time" + " ");
-                            t1v.setTextColor(Color.CYAN);
+                            t1v.setText(" " + output.get(i + 1) + " ");
+                            t1v.setTextColor(Color.WHITE);
                             t1v.setGravity(Gravity.CENTER);
                             tbrow.addView(t1v);
+
                             TextView t2v = new TextView(timeActivity);
-                            t2v.setText(" " + totalTime + " ");
-                            t2v.setTextColor(Color.CYAN);
+                            t2v.setText(" " + output.get(i + 2) + " ");
+                            t2v.setTextColor(Color.WHITE);
                             t2v.setGravity(Gravity.CENTER);
                             tbrow.addView(t2v);
+
+                            TextView t3v = new TextView(timeActivity);
+                            t3v.setText(" " + output.get(i + 3) + " ");
+                            t3v.setTextColor(Color.WHITE);
+                            t3v.setGravity(Gravity.CENTER);
+                            tbrow.addView(t3v);
                             stk.addView(tbrow);
-
-                            //Add blank row after total
-                            stk.addView(new TableRow(timeActivity));
                         }
-
-
-                        TableRow tbrow = new TableRow(timeActivity);
-                        TextView t0v = new TextView(timeActivity);
-                        t0v.setText(" " + output.get(i) + " ");
-                        t0v.setTextColor(Color.WHITE);
-                        t0v.setGravity(Gravity.CENTER);
-                        tbrow.addView(t0v);
-
-                        TextView t1v = new TextView(timeActivity);
-                        t1v.setText(" " + output.get(i+1) + " ");
-                        t1v.setTextColor(Color.WHITE);
-                        t1v.setGravity(Gravity.CENTER);
-                        tbrow.addView(t1v);
-
-                        TextView t2v = new TextView(timeActivity);
-                        t2v.setText(" " + output.get(i+2) + " ");
-                        t2v.setTextColor(Color.WHITE);
-                        t2v.setGravity(Gravity.CENTER);
-                        tbrow.addView(t2v);
-
-                        TextView t3v = new TextView(timeActivity);
-                        t3v.setText(" " + output.get(i+3) + " ");
-                        t3v.setTextColor(Color.WHITE);
-                        t3v.setGravity(Gravity.CENTER);
-                        tbrow.addView(t3v);
-                        stk.addView(tbrow);
                     }
                 }
                 catch (ParseException e) {
@@ -495,6 +513,7 @@ public class TimeActivity extends AppCompatActivity implements NavigationView.On
 
                 //Add blank row after total
                 stk.addView(new TableRow(timeActivity));
+            }
             }
 
         }
